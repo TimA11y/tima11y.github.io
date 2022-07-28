@@ -43,7 +43,10 @@
 
 				// Display the characters and word count
 				charCount.textContent = text.value.length;
-        wordCount.textContent = text.value.trim().split(" ").length;
+				let words = text.value.split(/[\s]+/g).filter((word) => {
+					return word.length;
+				});
+        wordCount.textContent = words.length;
 
 			});
 		</script>
