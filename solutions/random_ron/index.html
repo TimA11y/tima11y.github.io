@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Random Ron</title>
+  </head>
+  <body>
+    <div>
+      <blockquote id="quote" aria-live="polite"></blockquote>
+    </div>
+    <div>
+      <button id="getQuote">Get Quote</button>
+    </div>
+    <script>
+      let quote = document.querySelector("#quote");
+      let btnGetQuote = document.querySelector("#getQuote");
+      let getQuote = function () {
+        fetch("https://ron-swanson-quotes.herokuapp.com/v2/quotes").then(function (response) {
+          if (response.ok) {
+            return response.json();
+          } // end if.
+        }).then(function (text) {
+          quote.textContent = text;
+        });
+      }; // end getQuote.
+
+      getQuote();
+      btnGetQuote.addEventListener("click", getQuote);
+
+
+
+
+
+    </script>
+  </body>
+</html>
