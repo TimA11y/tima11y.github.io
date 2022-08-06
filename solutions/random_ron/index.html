@@ -14,13 +14,28 @@
     <script>
       let quote = document.querySelector("#quote");
       let btnGetQuote = document.querySelector("#getQuote");
+      let history = [];
+
       let getQuote = function () {
         fetch("https://ron-swanson-quotes.herokuapp.com/v2/quotes").then(function (response) {
           if (response.ok) {
             return response.json();
           } // end if.
+
+          throw response.status;
         }).then(function (text) {
-          quote.textContent = text;
+          if (history.length > 49) {
+            history.shift();
+          } // end if
+          if (history.includes(text[0])) {
+            getQuote();
+            return;
+          } // end if.
+
+          quote.textContent = text[0];
+          history.push(text[0]);
+        }).catch(function (error) {
+          quote.textContent = "Something went wrong";
         });
       }; // end getQuote.
 
