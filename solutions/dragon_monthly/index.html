@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Dragon Monthly</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      let app = document.querySelector("#app");
+
+      let getData = async function () {
+        try {
+          let response = await fetch("https://vanillajsacademy.com/api/dragons.json");
+          if (!response.ok) {
+            throw response.status;
+          } // end if.
+
+          let data = await response.json();
+
+          let html = `<h1>${data.publication}</h1>`;
+          for (let article of data.articles) {
+            html += `<h2><a href="${article.url}">${article.title}</a></h2>`;
+            html += `<p>By ${article.author} published on ${article.pubdate}</p>`;
+            html += `<p>${article.article}</p>`;
+          } // end for article.
+          app.innerHTML = html;
+        } catch (error) {
+          app.innerHTML = `<p>Something went wrong, very wrong.</p>`;
+        } // end try catch.
+      }; // end getData.
+      getData();
+    </script>
+  </body>
+</html>
