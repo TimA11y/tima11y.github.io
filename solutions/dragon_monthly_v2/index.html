@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Dragon Monthly (v2)</title>
+  </head>
+  <body>
+    <div id="App"></div>
+    <script>
+      let app = document.querySelector("#App");
+
+      let renderFail = function () {
+        app.innerHTML = "<p>Something went wrong.</p>";
+      }; // end renderFail.
+
+      let render = function(articles, authors) {
+        let html = "";
+
+        html += `<h1>${articles.publication}</h1>`;
+        app.innerHTML = html;
+      }; // end render.
+
+      Promise.all([fetch("https://vanillajsacademy.com/api/dragons.json"), fetch("https://vanillajsacademy.com/api/dragons-authors.json")]).then(function (responses) {
+        return responses.map(function (response) {
+          if (!response.ok) {
+            throw response.status;
+          } // end if.
+          return response.json();
+        });
+      }).then(function (data) {
+        console.log(data[0]);
+        if (data[0].length < 1) {
+          renderFail();
+        }
+        render(data[0], data[1]);
+      }).catch(function (error) {
+        renderFail();
+      }); // end promise.all.
+    </script>
+  </body>
+</html>
