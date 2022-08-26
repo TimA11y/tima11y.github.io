@@ -42,10 +42,11 @@ function clearInput (event) {
   window.localStorage.removeItem(formKey);
 
   // clear out the fields and set focus to the first field in the form.
-  form.reset();
-  form.elements[0].focus();
-
-  event.preventDefault();
+  let fields = form.elements;
+  for (let field of fields) {
+    field.value = "";
+  } // end for fields.
+  fields[0].focus();
 
 } // end clearInput function.
 
@@ -72,8 +73,36 @@ function loadData () {
   
 } // end loadData function.
 
+/** 
+ * Show a notification message for a brief period of time.
+ * @param {String} message - the message that will be displayed.
+ * @param {Number} displayTime - the length of time (in milliseconds) to display the message before erasing it.
+*/
+function showStatus (message, displayTime) {
+  let notification = document.createElement("div");
+  notification.setAttribute("aria-live", "polite")
+
+  form.append(notification);
+
+  setTimeout(function () {
+    notification.textContent = message;
+  }, 1);
+
+  setTimeout(function () {
+    notification.remove();
+  }, displayTime);
+
+} // end showStatus function.
+
 loadData();
 
 form.addEventListener("input", saveInput);
-form.addEventListener("submit", clearInput);
-
+form.addEventListener("submit", function (event) {
+  // clear out the form and set focus to the name field before display the notification.
+  // This ensures the screen reader will read the notification.
+  // When done the other way, the notification message is interrupted when the focus changes and the screen reader
+  // reads the name of the input field that now has focus.
+  clearInput();
+  showStatus("Your information was saved successfully.", 5000);
+  event.preventDefault();
+});
