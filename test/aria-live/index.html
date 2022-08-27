@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Just In Time Status Messages</title>
+  </head>
+  <body>
+    <h1>Just In Time Status Messages</h1>
+    <p>In these tests, when you press the buttons, an aria-live region will be added to the end of the form and then 1 ms afterwards text or an element will be added to the region. The message will disappear after a few seconds. The question is "Will a screen reader announce the message when it is repeated?"</p>
+    
+    <h2>Updating the Text Content Only</h2>
+    <p>In this test, only the text contents of the aria-live region will be updated.</p>
+    <form id="test1">
+      <button>Update Text Content</button>
+      <!-- The aria-live region will be added to the end of this form. -->
+    </form>
+    <h2>Updating Element</h2>
+    <p>In this test, an element node will be added to the aria-live region.</p>
+    <form id="test2">
+      <button>Update Element</button>
+      <!-- The aria-live region will be added to the end of this form. -->
+    </form>
+    <script src="index.js"></script>
+  </body>
+</html>
