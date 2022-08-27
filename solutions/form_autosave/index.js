@@ -1,5 +1,6 @@
 let form = document.querySelector("#save-me");
 let formKey = "autosave_fields";
+let debounce;
 
 /**
  * Serialize all form data into an object
@@ -22,14 +23,41 @@ let formKey = "autosave_fields";
 } // end serialize.
 
 /** 
+ * Show a notification message for a brief period of time.
+ * @param {String} message - the message that will be displayed.
+ * @param {Number} displayTime - the length of time (in milliseconds) to display the message before erasing it.
+*/
+function showStatus (message, displayTime) {
+  let notification = document.createElement("div");
+  notification.setAttribute("aria-live", "polite")
+
+  form.append(notification);
+
+  setTimeout(function () {
+    notification.textContent = message;
+  }, 1);
+
+  setTimeout(function () {
+    notification.remove();
+  }, displayTime);
+
+} // end showStatus function.
+
+
+/** 
  * Save the form data as the user enters information.
  * @param {event} event the event object.
 */
 function saveInput (event) {
+  clearTimeout(debounce);
 
-  // Serialize and then save data.
-  let data = JSON.stringify(serialize(new FormData(form)));
-  window.localStorage.setItem(formKey, data);
+  debounce = setTimeout(function () {
+    // Serialize and then save data.
+    let data = JSON.stringify(serialize(new FormData(form)));
+    window.localStorage.setItem(formKey, data);
+
+    showStatus("Autosaved the form contents.", 5000)
+  }, 1000);
 
 } // end saveInput function.
 
@@ -73,36 +101,13 @@ function loadData () {
   
 } // end loadData function.
 
-/** 
- * Show a notification message for a brief period of time.
- * @param {String} message - the message that will be displayed.
- * @param {Number} displayTime - the length of time (in milliseconds) to display the message before erasing it.
-*/
-function showStatus (message, displayTime) {
-  let notification = document.createElement("div");
-  notification.setAttribute("aria-live", "polite")
-
-  form.append(notification);
-
-  setTimeout(function () {
-    notification.textContent = message;
-  }, 1);
-
-  setTimeout(function () {
-    notification.remove();
-  }, displayTime);
-
-} // end showStatus function.
 
 loadData();
 
 form.addEventListener("input", saveInput);
 form.addEventListener("submit", function (event) {
-  // clear out the form and set focus to the name field before display the notification.
-  // This ensures the screen reader will read the notification.
-  // When done the other way, the notification message is interrupted when the focus changes and the screen reader
-  // reads the name of the input field that now has focus.
+  // clear out the form and set focus to the name field and set focus to the first field.
   clearInput();
-  showStatus("Your information was saved successfully.", 5000);
+  showStatus("The form was submitted successfully!", 5000);
   event.preventDefault();
 });
