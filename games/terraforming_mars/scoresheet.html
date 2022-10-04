@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Scoresheet - Terraforming Mars</title>
+</head>
+
+<body>
+<div>
+  <label for="tr">Terraforming Rating:</label>
+  <input type="number" id="tr" value="0">
+</div>
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Resource</th>
+      <th scope="col" id="headerProduction">Production Rate</th>
+      <th scope="col" id="headerTotal">Total Supply</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" id="headerMC">Megacredits</th>
+      <td><input type="number" id="prodMC" aria-labelledby="headerMC headerProduction" value="0"></td> 
+      <td><input type="number"  id="totalMC" aria-labelledby="headerMC headerTotal" value="0"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="headerTitanium">Titanium</th>
+      <td><input type="number"  id=prodTitanium" aria-labelledby="headerTitanium headerProd" value="0"></td>
+      <td><input type="number"  id="totalTitanium" aria-labelledby="headerTitanium headerTotal" value="0"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="headerSteel">Steel</th>
+      <td><input type="number"  id="prodSteel" aria-labelledby="headerSteel headerProduction" value="0"></td>
+      <td><input type="number"  id="totalSteel" aria-labelledby="headerSteel headerTotal" value="0"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="headerPlant">Plant</th>
+      <td><input type="number"  id="prodPlant" aria-labelledby="headerPlant headerProduction" value="0"></td>
+      <td><input type="number"  id="totalPlant" aria-labelledby="headerPlant headerTotal" value="0"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="headerEnergy">Energy</th>
+      <td><input type="number"  id="prodEnergy" aria-labelledby="headerEnergy headerProduction" value="0"></td>
+      <td><input type="number"  id="totalEnergy" aria-labelledby="headerEnergy headerTotal" value="0"></td>
+    </tr>
+    <tr>
+      <th scope="row" id="headerHeat">heat</th>
+      <td><input type="number"  id="prodHeat" aria-labelledby="headerHeat headerProduction" value="0"></td>
+      <td><input type="number"  id="totalHeat" aria-labelledby="headerHeat headerTotal" value="0"></td>
+    </tr>
+  </tbody>
+</table>
+   <div>
+    <button id="btnUpdate">Update Totals</button>
+  </div>
+
+<script>
+// Data variables.
+const data = {
+  tr: 0,
+  mc: {
+    prod: 0,
+    total: 0
+  },
+  titanium: {
+    prod: 0,
+    total: 0
+  },
+  steel: {
+    prod: 0,
+    total: 0
+  },
+  plant: {
+    prod: 0,
+    total: 0
+  },
+  energy: {
+    prod: 0,
+    total: 0
+  },
+  heat: {
+    prod: 0,
+    total: 0
+  }
+}; // end data.
+
+/ UI variables.
+const ui = {
+  tr: document.querySelector("#tr"),
+  mc: {
+    prod: document.querySelector("#prodMC"),
+    total: document.querySelector("##totalMC")
+  },
+  titanium: {
+    prod: document.querySelector("#prodTitanium"),
+    total: document.querySelector("#totalTitanium")
+  },
+  steel: {
+    prod: document.querySelector("#prodSteel"),
+    total: document.querySelector("#totalSteel")
+  },
+  plant: {
+    prod: document.querySelector("#prodPlant"),
+    total: document.querySelector("#totalPlant")
+  },
+  energy: {
+    prod: document.querySelector("#prodEnergy"),
+    total: document.querySelector("#totalEnergy")
+  },
+  heat: {
+    prod: document.querySelector("#prodHeat"),
+    total: document.querySelector("#totalHeat")
+  }
+}; // end ui.
+const btnUpdate = document.querySelector("#btnUpdate");
+
+// Data and UI functions.
+const updateData = function (data, ui) {
+  // et current values.
+  data.tr = ui.tr.value;
+  data.mc.prod = ui.mc.prod.value;
+  data.mc.total = ui.mc.total.value;
+  data.titanium.prod = ui.titanium.prod.value;
+  data.titanium.total = ui.titanium.total.value;
+  data.steel.prod = ui.steel.prod.value;
+  data.steel.total = ui.steel.total.value;
+  data.plant.prod = ui.plant.prod.value;
+  data.plant.total = ui.plant.total.value;
+  data.energy.prod = ui.energy.prod.value;
+  data.energy.total = ui.energy.total.value;
+  data.heat.prod = ui.heat.prod.value;
+  data.heat.total = ui.heat.total.value;
+  // Calculate new numbers.
+  data.heat.total = data.heat.prod + data.heat.total + data.energy.total;
+  data.energy.total = data.energy.prod;
+  data.plant.total = data.plant.prod + data.plant.total;
+  data.steel.total = data.steel.total + data.steel.prod;
+  data.titanium.total = data.titanium.total + data.titanium.prod;
+  data.mc.total = data.mc.total + data.mc.prod + data.tr;
+}; // end updateData.
+
+const displayData = function (data, ui) {
+  ui.mc.total.value = data.mc.total;
+  ui.titanium.total.value = data.titanium.total;
+  ui.steel.total.value = data.steel.total;
+  ui.plant.total.value = data.plant.total;
+  ui.energy.total.value = data.energy.total;
+  ui.heat.total.value = data.heat.total;
+}; // end displayData.
+
+// main.
+btnUpdate.addEventListener("click", (event) => {
+  updateData(,data, ui);
+  displayData(data, ui);
+}); // end btnUpdate click.
+
+
+</script>
+</body>
+</html>
