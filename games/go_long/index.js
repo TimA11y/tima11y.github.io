@@ -11,6 +11,11 @@ let result3 = document.querySelector("#result3");
 let chkResult3 = document.querySelector("#chkResult3");
 let bigPlay = document.querySelector("#bigPlay");
 let chkBigPlay = document.querySelector("#chkBigPlay");
+let selTeam = document.querySelector("#team");
+let selDowns = document.querySelector("#downs");
+let numToGo = document.querySelector("#togo");
+let numYardline = document.querySelector("#yardline");
+let btnFlip = document.querySelector("#flip");
 let messages = document.querySelector("#messages");
 let actionButtons = document.querySelector('[data-role="actions"]');
 
@@ -85,23 +90,28 @@ actionButtons.addEventListener("click", function (event) {
       resetDowns();
       value = hike();
       processHike(value);
+      selDowns.value  = "1";
+      numToGo.value = "10";
       break;
     case "kickoff":
       value = kickoff();
       messages.innerHTML = `The kick is returned to the ${value} yard line.`;
+      btnFlip.click();
+      numYardline.value = value;
       break;
     case "punt":
-      value = parseInt(prompt("Kicking from what absolute yardline?"));
+      messages.innerHTML = "";
+      value = parseInt(numYardline.value);
       value = punt(value);
       if (value.isBlocked) {
         messages.innerHTML = `The defense blocks the punt!`;
-        break;
       } // end if.
       if (value.isTouchback) {
         messages.innerHTML = `Touchback!`;
-        break;
       } // end if.
-      messages.innerHTML = `The punt ends up at the ${value.position}`;
+      messages.innerHTML = messages.innerHTML + `The punt ends up at the ${value.position}`;
+      numYardline.value = value.position;
+      btnFlip.click();
       break;
     case "field goal":
       value = prompt("From where are you attempting the field goal?");
@@ -112,6 +122,21 @@ actionButtons.addEventListener("click", function (event) {
         messages.innerHTML = `The kick misses the uprights!`;
       } // end if else.
       break;
+    case "turnover":
+      btnFlip.click();
     default:
   } // end switch.
 }); // end click action buttons.
+
+btnFlip.addEventListener("click", function (event) {
+  let valYardline = parseInt(numYardline.value);
+
+  if (selTeam.value === "1") {
+    selTeam.value = "2";
+  } else {
+    selTeam.value = "1";
+  } // end if else.
+  selDowns.value = "1";
+  numToGo.value = 10;
+  numYardline.value = 100 - valYardline;
+}); // end btnFlip  click.
