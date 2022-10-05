@@ -119,6 +119,8 @@ const punt = function (yardline) {
   let isBlocked = false;
   let puntDistance = roll(dice.kicking);
 
+
+
   if (puntDistance === "x") { // is blocked.
     isBlocked = true;
     puntDistance = 0;

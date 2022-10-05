@@ -91,17 +91,17 @@ actionButtons.addEventListener("click", function (event) {
       messages.innerHTML = `The kick is returned to the ${value} yard line.`;
       break;
     case "punt":
-      value = prompt("Kicking from what absolute yardline?");
+      value = parseInt(prompt("Kicking from what absolute yardline?"));
       value = punt(value);
-      if (value.blocked) {
+      if (value.isBlocked) {
         messages.innerHTML = `The defense blocks the punt!`;
         break;
       } // end if.
-      if (value.touchback) {
+      if (value.isTouchback) {
         messages.innerHTML = `Touchback!`;
         break;
       } // end if.
-      messages.innerHTML = `The punt eends up at the ${value.total}`;
+      messages.innerHTML = `The punt ends up at the ${value.position}`;
       break;
     case "field goal":
       value = prompt("From where are you attempting the field goal?");
