@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Regno</title></title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <main>
+    <label>Year: </label></label>
+    <span id="year">1</span>
+    <h1>People</h1>
+    <div>
+      <label>Total: </label>
+      <span id="popTotal">100</span>
+    </div>
+    <div>
+      <label>Current Inhabitants: </label>
+      <span id="popCurrent">95</span>
+    </div>
+    <div>
+      <label>Immigrants: </label>
+      <span id="popImmigrants">5</span>
+    </div>
+    <div>
+      <label>Starved: </label>
+      <span id="popStarved">0</span>
+      </div>
+    <h1>Land</h1>
+    <div>
+      <label>Total: </label>
+      <span id="landTotal">1000 acres</span>
+    </div>
+    <div>
+      <label>Trading at: </label>
+      <span id="landTrade">17 bushels/acre</span>
+    </div
+    <h1>Grain</h1>
+    <div>
+      <label>Total: </label>
+      <span id="grainTotal">2800 bushels</span>
+    </div>
+    <div>
+      <label>Harvested: </label>
+      <span id="grainHarvested">3000 bushels (3 bushels/acre)</span>
+    </div>
+    <div>
+      <label>Rats ate: </label>
+      <span id="graintRats">200 bushels</span>
+    </div>
+    <div></div>
+      <button id="btnBuy" onclick="dlgBuy.showModal(); rngBuy.focus();">Buy Land</button>
+      <button id="btnSell" onclick="dlgSell.showModal(); rngSell.focus();">Sell Land</button>
+    </div>
+    <div>
+      <label for="rngFeed">How many bushels do you want to feed your people? <span id="rngFeedMax">(max 2800 bushels)</span></label>
+    </div>
+    <div>
+      <output id="outFeed">0 bushels</output>
+    </div>
+      <div>
+      <input type="range" id="rngFeed" min="0" max="2800" value="0" oninput="outFeed.value = `${rngFeed.value} bushels`" oninvalid="outFeed.value = `${rngFeed.value} bushels`">
+    </div>
+    <div>
+      <label for="rngPlant">How many acres do you want to plant? <span id="rngPlantMax">(max 1000 acres</span></label>
+    </div>
+    <div>
+      <output id="outPlant">0 acres</output>
+    </div>
+    <div>
+      <input type="range" id="rngPlant" min="0" max="1000" value="0" oninput="outPlant.value = `${rngPlant.value} acres`">
+    </div>
+    <div>
+      <button id="btnEndYear">End Year</button>
+    </div>
+    </main>
+    <dialog role="dialog" id="dlgBuy" aria-labelledby="hdgBuy">
+      <h1 id="hdgBuy">How much do you want to buy?</h1>
+      <form method="dialog">
+        <div>
+          <output id="outBuy">0 acres</output>
+        </div>
+        <div>
+          <input type="range" id="rngBuy" aria-labelledby="hdgBuy" min="0" max="167" oninput="outBuy.value = `${rngBuy.value} acres`"
+        </div>
+        <div>
+          <button default>Buy</button>
+          <button>Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog role="dialog" id="dlgSell" aria-labelledby="hdgSell">
+      <h1 id="hdgSell">How much do you want to sell?</h1>
+      <form method="dialog">
+        <div>
+          <output id="outSell">0 acres</output>
+        </div>
+        <div>
+          <input type="range" id="rngSell" aria-labelledby="hdgSell" min="0" max="1000" value="0" oninput="outSell.value = `${rngSell.value} acres`">
+        </div>
+        <div>
+          <button default>Sell</button>
+          <button onclick="dlgBuy.close();">Cancel</button>
+        </div>
+      </form>>
+    </dialog>
+  </body>
+</html>
