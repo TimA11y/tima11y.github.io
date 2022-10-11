@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dice Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style type="text/css">
+    body {
+      margin: 0 auto;
+      max-width: 40em;
+      width: 88%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Dice Library</h1>
+
+  <p>All of the magic here happens in the console.</p>
+
+
+  <script>
+    let dice = (function () {
+      /**
+       * Randomly shuffle an array
+       * https://stackoverflow.com/a/2450976/1293256
+       * @param  {Array} array The array to shuffle
+       * @return {Array}       The shuffled array
+       */
+      function shuffle(array) {
+
+        let currentIndex = array.length;
+        let temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+
+      } // end shuffle.
+
+      /** 
+       * Roll a dice and return the rolled result.
+       * @param {number} sides - the number of sides on the dice.
+       * @return {number} The result rolled.
+       */
+      let roll = function (sides) {
+        // create diceArray.
+        let diceArray = [];
+        for (let i = 1; i <= sides; i++) {
+          diceArray.push(i);
+        } // end for i.
+
+        let results = shuffle(diceArray);
+        return results.shift();
+      }; // end roll.
+
+      let d2 = () => { return roll(2) };
+      let d6 = () => { return roll(6) };
+      let d8 = () => { return roll(8) };
+      let d10 = () => { return roll(10) };
+      let d12 = () => { return roll(12) };
+      let d20 = () => { return roll(20) };
+      let d = (sides) => { return roll(sides) };
+
+      return {
+        "d2": d2,
+        "d6": d6,
+        "d8": d8,
+        "d10": d10,
+        "d12": d12,
+        "d20": d20,
+        "d": d
+      };
+    })(); // end dice library.
+
+    console.log(`d2: ${dice.d2()}\nd6: ${dice.d6()}\nd8: ${dice.d8()}\nd10: ${dice.d10()}\nd12: ${dice.d12()}\nd20: ${dice.d20()}\ndX (d64): ${dice.d(64)}`);
+    
+  </script>
+</body>
+
+</html>
