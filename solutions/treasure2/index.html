@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Treasure Chest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style type="text/css">
+    body {
+      margin: 0 auto;
+      max-width: 40em;
+      width: 88%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Treasure Chest</h1>
+
+  <p>All of the magic here happens in the console.</p>
+
+
+  <script>
+    let TreasureChest = (function () {
+      function Constructor() {
+        this.bronze = 0;
+        this.gold = 0;
+        this.silver = 0;
+      } // end Constructor.
+
+      Constructor.prototype.addBronze = function (value) {
+        this.bronze = this.bronze + value;
+        return this;
+      }; // end addBronze.
+
+      Constructor.prototype.addGold = function (value) {
+        this.gold = this.gold + value;
+        return this;
+      }; // end addGold.
+
+      Constructor.prototype.addSilver = function (value) {
+        this.silver = this.silver + value;
+        return this;
+      }; // end addSilver.
+
+      Constructor.prototype.getTotal = function () {
+        return `You have ${this.gold} gold, ${this.silver} silver, and ${this.bronze} bronze in your treasure chest.`;
+      }; // end getTotal.
+
+      Constructor.getRandomLoot = function () {
+        let amount = function () {
+          return Math.floor((Math.random() * 100) + 1);
+        }; // end amount.
+        return {
+          "bronze": amount(),
+          "gold": amount(),
+          "silver": amount()
+        };
+      }; // end getRandomLoot.
+
+      return Constructor;
+    })(); // end TreasureChest.
+
+    // Main.
+    let captain = new TreasureChest();
+    captain.addBronze(5).addGold(17).addSilver(25);
+    console.log(captain.getTotal());
+    let loot = TreasureChest.getRandomLoot();
+    console.log(JSON.stringify(loot));
+    captain.addBronze(loot.bronze).addGold(loot.gold).addSilver(loot.silver);
+    console.log(captain.getTotal());
+  </script>
+</body>
+
+</html>
