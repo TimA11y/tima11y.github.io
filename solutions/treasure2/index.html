@@ -30,6 +30,43 @@
         this.silver = 0;
       } // end Constructor.
 
+
+      /**
+       * Randomly shuffle an array
+       * https://stackoverflow.com/a/2450976/1293256
+       * @param  {Array} array The array to shuffle
+       * @return {Array}       The shuffled array
+       */
+      function shuffle(array) {
+
+        let currentIndex = array.length;
+        let temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+
+      } // end shuffle.
+
+      let createDiceArray = function (maxValue, minValue = 1) {
+        let results = [];
+        for (let i = minValue; i <= maxValue; i++) {
+          results.push(i);
+        } // end for i.
+
+        return results;
+      }; // end createDiceArray.
+
       Constructor.prototype.addBronze = function (value) {
         this.bronze = this.bronze + value;
         return this;
@@ -50,13 +87,12 @@
       }; // end getTotal.
 
       Constructor.getRandomLoot = function () {
-        let amount = function () {
-          return Math.floor((Math.random() * 100) + 1);
-        }; // end amount.
+        let type = shuffle(["bronze", "gold", "silver"]).shift();
+        let diceArray = createDiceArray(50);
+        let amount = shuffle(diceArray).shift();
         return {
-          "bronze": amount(),
-          "gold": amount(),
-          "silver": amount()
+          "type": type,
+          "amount": amount
         };
       }; // end getRandomLoot.
 
@@ -69,8 +105,6 @@
     console.log(captain.getTotal());
     let loot = TreasureChest.getRandomLoot();
     console.log(JSON.stringify(loot));
-    captain.addBronze(loot.bronze).addGold(loot.gold).addSilver(loot.silver);
-    console.log(captain.getTotal());
   </script>
 </body>
 
