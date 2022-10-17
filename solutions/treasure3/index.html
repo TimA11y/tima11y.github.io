@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Treasure Chest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style type="text/css">
+    body {
+      margin: 0 auto;
+      max-width: 40em;
+      width: 88%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Treasure Chest</h1>
+
+  <p>All of the magic here happens in the console.</p>
+
+
+  <script>
+    let TreasureChest = (function () {
+      function Constructor(options = {}) {
+        let { bronze, gold, silver, message } = Object.assign({
+          bronze: 0,
+          gold: 0,
+          silver: 0,
+          message: "Your treasure chest contains:"
+        }, options);
+
+        Object.defineProperties(this, {
+          bronze: {
+            value: bronze,
+            writable: true
+          },
+          gold: {
+            value: gold,
+            writable: true
+          },
+          silver: {
+            value: silver,
+            writable: true
+          },
+          "message": {
+            "value": message
+          }
+        });
+      } // end Constructor.
+
+
+      /**
+       * Randomly shuffle an array
+       * https://stackoverflow.com/a/2450976/1293256
+       * @param  {Array} array The array to shuffle
+       * @return {Array}       The shuffled array
+       */
+      function shuffle(array) {
+
+        let currentIndex = array.length;
+        let temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+
+      } // end shuffle.
+
+      let createDiceArray = function (maxValue, minValue = 1) {
+        let results = [];
+        for (let i = minValue; i <= maxValue; i++) {
+          results.push(i);
+        } // end for i.
+
+        return results;
+      }; // end createDiceArray.
+
+      Constructor.prototype.addBronze = function (value) {
+        this.bronze = this.bronze + value;
+        return this;
+      }; // end addBronze.
+
+      Constructor.prototype.addGold = function (value) {
+        this.gold = this.gold + value;
+        return this;
+      }; // end addGold.
+
+      Constructor.prototype.addSilver = function (value) {
+        this.silver = this.silver + value;
+        return this;
+      }; // end addSilver.
+
+      Constructor.prototype.getTotal = function () {
+        return `${this.message} ${this.gold} gold, ${this.silver} silver, ${this.bronze} bronze.`;
+      }; // end getTotal.
+
+      Constructor.getRandomLoot = function () {
+        let type = shuffle(["bronze", "gold", "silver"]).shift();
+        let diceArray = createDiceArray(50);
+        let amount = shuffle(diceArray).shift();
+        return {
+          "type": type,
+          "amount": amount
+        };
+      }; // end getRandomLoot.
+
+      return Constructor;
+    })(); // end TreasureChest.
+
+    // Main.
+    let captain = new TreasureChest();
+    captain.addBronze(5).addGold(17).addSilver(25);
+    console.log(captain.getTotal());
+
+    let firstMate = new TreasureChest({ silver: 5, bronze: 12, message: "The first mate's treasure chest contains:" });
+    console.log(firstMate.getTotal());
+
+    firstMate.addGold(5).addSilver(25);
+
+    console.log(firstMate.getTotal());
+
+
+    let loot = TreasureChest.getRandomLoot();
+    console.log(JSON.stringify(loot));
+  </script>
+</body>
+
+</html>
