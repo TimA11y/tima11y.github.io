@@ -29,7 +29,7 @@
           bronze: 0,
           gold: 0,
           silver: 0,
-          message: "Your treasure chest contains:"
+          message: "Your treasure chest contains {{gold}} gold, {{silver}} silver, and {{bronze}} bronze."
         }, options);
 
         Object.defineProperties(this, {
@@ -45,7 +45,7 @@
             value: silver,
             writable: true
           },
-          "message": {
+          "_message": {
             "value": message
           }
         });
@@ -103,9 +103,9 @@
         return this;
       }; // end addSilver.
 
-      Constructor.prototype.getTotal = function () {
-        return `${this.message} ${this.gold} gold, ${this.silver} silver, ${this.bronze} bronze.`;
-      }; // end getTotal.
+      Constructor.prototype.getLoot = function () {
+        return this._message.replace("{{gold}}", this.gold).replace("{{silver}}", this.silver).replace("{{bronze}}", this.bronze);
+      }; // end getLoot.
 
       Constructor.getRandomLoot = function () {
         let type = shuffle(["bronze", "gold", "silver"]).shift();
@@ -122,19 +122,22 @@
 
     // Main.
     let captain = new TreasureChest();
-    captain.addBronze(5).addGold(17).addSilver(25);
-    console.log(captain.getTotal());
+    let firstMate = new TreasureChest({
+      "silver": 5,
+      "bronze": 15,
+      "message": "The navigator has {{gold}} gold, {{silver}} silver, and {{bronze}} bronze."
+    });
 
-    let firstMate = new TreasureChest({ silver: 5, bronze: 12, message: "The first mate's treasure chest contains:" });
-    console.log(firstMate.getTotal());
+    console.log(captain.getLoot());
+    console.log(firstMate.getLoot());
 
-    firstMate.addGold(5).addSilver(25);
+    captain.addGold(10).addSilver(20).addBronze(30);
+    firstMate.addGold(7).addBronze(13);
 
-    console.log(firstMate.getTotal());
+    console.log(captain.getLoot());
+    console.log(firstMate.getLoot());
 
-
-    let loot = TreasureChest.getRandomLoot();
-    console.log(JSON.stringify(loot));
+    console.log(TreasureChest.getRandomLoot());
   </script>
 </body>
 
