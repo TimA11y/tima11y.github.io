@@ -65,18 +65,43 @@ class TreasureChest {
     };
   } // end static getRandomLoot.
 
+
+  /**  
+   * Creates and emits a custom event.
+   * @param {string} type - type of event to dispatch.
+   * @param {*} details - any details you want to include.
+  */
+  #emit(type, details) {
+    let event = new CustomEvent(type, {
+      "bubbles": true,
+      "cancelable": true,
+      "detail": details
+    });
+
+    return document.dispatchEvent(event);
+  } // end #emit method.
+
   addGold(amount) {
+    let oldValue = this.#gold;
     this.#gold = this.#gold + amount;
+    let newValue = this.#gold;
+    this.#emit("treasure:gold", `Added gold. Old: ${oldValue}, New: ${newValue}`);
     return this;
   } // end addGold.
 
   addSilver(amount) {
+    let oldValue = this.#silver;
     this.#silver = this.#silver + amount;
+    let newValue = this.#silver;
+    this.#emit("treasure:silver", `Added silver. Old: ${oldValue}, New: ${newValue}`);
     return this;
   }  // end addSilver.
 
   addBronze(amount) {
+    let oldValue = this.#bronze;
     this.#bronze = this.#bronze + amount;
+    let newValue = this.#bronze;
+    this.#emit("treasure:bronze", `Added Bronze. Old: ${oldValue}, New: ${newValue}`);
     return this;
   } // end addBronze.
 
@@ -98,6 +123,18 @@ class TreasureChest {
 
 } // end TreasureChest class.
 
+function reportEvent(event) {
+  console.log(`Type: ${event.type}\nDetails: ${event.detail}`);
+}
+
+document.addEventListener("treasure:gold", reportEvent);
+document.addEventListener("treasure:silver", reportEvent);
+document.addEventListener("treasure:bronze", reportEvent);
+
+
+
+
+// Main.
 let captain = new TreasureChest({
   "gold": 10,
   "silver": 50,
