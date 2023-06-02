@@ -6,19 +6,28 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-<form>
-  <label for="listOfPlanets">Planet:</label>
-  <select id="listOfPlanets" autofocus></select>
-  <button type="submit">Draw Planet</button>
-</form>
-<h2>Available Planets</h2>
-<ul id="availablePlanets">
-</ul>
-<h2>Claimed Planets</h2>
-<ul id="claimedPlanets">
-</ul>
-<hr>
-<div id="messanger" aria-live="polite"></div>
-<script src="index.js"></script>
+  <div role="region" aria-labelledby="hdgDeck">
+    <button aria-expanded="true"><h1 id="hdgDeck">Deck</h1></button>
+    <div id="deck">
+    </div>
+  </div>
+  <div role="region" aria-labelledby="hdgTableau">
+    <h1 id="hdgTableau">Available Planets</h1>
+    <div id="tableau">
+
+    </div>
+  </div>
+  <div role="region" aria-labelledby="hdgColonies">
+    <h1 id="hdgColonies">Colonies</h1>
+    <div id="colonies">
+
+    </div>
+  </div>
+  <div role="region" aria-labelledby="hdgDiscard">
+    <button aria-expanded="false"><h1 id="hdgDiscard">Discards</h1></button>
+    <div id="discards">
+    </div>
+  </div>
+  <script type="module" src="./index.js"></script>
 </body>
 </html>

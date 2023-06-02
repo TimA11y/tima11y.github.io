@@ -1,3 +1,11 @@
-.hide {
+[aria-expanded="true"] + div {
+  display: block;;
+}
+
+[aria-expanded="false"] + div {
   display: none;
+}
+
+.list {
+  list-style-type:  none;
 }
