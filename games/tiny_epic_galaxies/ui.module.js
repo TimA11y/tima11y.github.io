@@ -40,7 +40,6 @@ const createCard = function (planet, location) {
             // add no buttons to the card.
     } // end switch location.
 
-
     return `
     <div class="card">
         <h2 class="title">${planet.name} [${planet.victory_points} vp]</h2>
@@ -96,4 +95,5 @@ const createCardList = function (list, location) {
         return createCard(planet, location);
     }).join("");
 }; // end createCardList.
+
 export {createButtonList, createCardList};

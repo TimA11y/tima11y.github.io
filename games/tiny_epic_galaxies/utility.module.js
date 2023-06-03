@@ -31,4 +31,20 @@ const findPlanetIndex = function (planetName, planetArray) {
   });
 }; // end findPlanetIndex.
 
-export { findPlanet, findPlanetIndex };
+/** 
+ * Sorts the planets alphabetically by name.
+ * @param {Object} a - The first planet object.
+ * @param {Object} b - The second planet object.
+ * @returns {Integer} - returns -1 (A > B), 0 (A == B), or 1 (B > A).
+ */
+const comparePlanets = function (a, b) {
+  if (a.name < b.name) {
+    return -1;
+  } // end if.
+  if (a.name > b.name) {
+    return 1;
+  } // end if.
+  return 0
+}
+
+export { findPlanet, findPlanetIndex , comparePlanets};
