@@ -2,9 +2,9 @@
 "use strict";
 
 // Import modules.
-import {gameState} from "./data.module.js";
-import {createButtonList, createCardList} from "./ui.module.js";
-import {findPlanet, findPlanetIndex} from "./utility.module.js";
+import { gameState } from "./data.module.js";
+import { createButtonList, createCardList } from "./ui.module.js";
+import { findPlanet, findPlanetIndex } from "./utility.module.js";
 
 // User Interface Variables
 let deck = document.querySelector("#deck");
@@ -29,12 +29,12 @@ document.addEventListener("click", function (event) {
       newState = "true";
     }
     event.target.setAttribute("aria-expanded", newState);
+    return;
   } // end if.
+
+  let planetName = event.target.getAttribute("data-planet");
+  let destination = event.target.getAttribute("data-moveto");
+  let origin = findPlanet(planetName, gameState);
+  let originIndex = findPlanetIndex(planetName, gameState[origin]);
+
 }); // end click event.
-
-
-gameState.tableau = gameState.deck.splice(10,4);
-gameState.colonies = gameState.deck.splice(8,4);
-gameState.discards = gameState.deck.splice(14,5);
-let planetName = gameState.discards[2].name;
-alert(findPlanet(gameState, planetName));
