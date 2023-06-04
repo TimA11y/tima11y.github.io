@@ -4,7 +4,7 @@
 // Import modules.
 import {render} from "./reef.es.min.js";
 import { gameState } from "./data.module.js";;
-import { createButtonList, createCardList, setFocus } from "./ui.module.js";
+import { createButtonList, createCardList, setFocus, sendMessage } from "./ui.module.js";
 import { findPlanet, findPlanetIndex, comparePlanets } from "./utility.module.js";
 
 // User Interface Variables
@@ -58,5 +58,23 @@ document.addEventListener("click", function (event) {
 
   // Set the keyboard focus.
   setFocus(origin, originIndex, gameState);
+
+  // Report the change.
+  switch (destination) {
+    case "deck":
+      sendMessage(`Moved ${planetName} into the deck.`, "#messages");
+      break;
+    case "tableau":
+      sendMessage(`Moved ${planetName} to the tableau.`, "#messages");
+      break;
+    case "colonies":
+      sendMessage(`Colonized ${planetName}.`, "#messages");
+      break;
+    case "discards":
+      sendMessage(`Discarded ${planetName}.`, "#messages");
+      break;
+    default:
+      // Do nothing.
+  } // end switch.
 
 }); // end click event.

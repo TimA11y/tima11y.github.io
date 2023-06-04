@@ -122,4 +122,16 @@ const setFocus = function (origin, originIndex, gameState) {
     document.querySelector(focusSelector).focus();
 }; // end setFocus.
 
-export {createButtonList, createCardList, setFocus};
+/** 
+ * Displays a message for the screen reader to read.
+ * @param {String} message - the message to display for a screen reader.
+ * @param {String} selector - The CSS selector of where to display the message.
+ */
+const sendMessage = function (message, selector) {
+    let messageNode = document.querySelector(selector);
+    setTimeout(function () {
+        messageNode.textContent = "";
+    }, 500);
+    messageNode.textContent = message;
+}; // end sendMessage.
+export {createButtonList, createCardList, setFocus, sendMessage};
