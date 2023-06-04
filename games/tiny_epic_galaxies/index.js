@@ -4,7 +4,7 @@
 // Import modules.
 import {render} from "./reef.es.min.js";
 import { gameState } from "./data.module.js";;
-import { createButtonList, createCardList } from "./ui.module.js";
+import { createButtonList, createCardList, setFocus } from "./ui.module.js";
 import { findPlanet, findPlanetIndex, comparePlanets } from "./utility.module.js";
 
 // User Interface Variables
@@ -19,6 +19,8 @@ render(tableau, createCardList(gameState.tableau, "tableau"));
 render(colonies, createCardList(gameState.colonies, "colonies"));
 render(discards, createButtonList(gameState.discards, "discards"));
 
+// Set initial focus.
+document.querySelector("button").focus();
 document.addEventListener("click", function (event) {
   let button = event.target.closest("button");
   if (!button) {
@@ -54,20 +56,7 @@ document.addEventListener("click", function (event) {
   render(colonies, createCardList(gameState.colonies, "colonies"));
   render(discards, createButtonList(gameState.discards, "discards"));
 
-  // Set keyboard focus after a planet is moved.
-  let currentFocus = originIndex - 1;
-  if (currentFocus < 0) {
-    currentFocus = 0;
-  } // end if.
-
-  // If there are still planets in the section move the focus to the previous planet.
-  // If there are no planets left in the section, move focus to the heading.
-  if (gameState[origin].length > 0) {
-    let focusPlanet = gameState[origin][currentFocus].name;
-    document.querySelector(`[data-planet="${focusPlanet}"]`)
-  }
-
-
-
+  // Set the keyboard focus.
+  setFocus(origin, originIndex, gameState);
 
 }); // end click event.

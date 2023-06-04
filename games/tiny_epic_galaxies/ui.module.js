@@ -96,4 +96,30 @@ const createCardList = function (list, location) {
     }).join("");
 }; // end createCardList.
 
-export {createButtonList, createCardList};
+/** 
+ * Set keyboard focus.
+ * @param {String} origin - The section that contained the planet before it moved.
+ * @param {Integer} originIndex - The planets original location in the array.
+ * @param {Object} gameState - The data containing the game state.
+ * 
+ */
+const setFocus = function (origin, originIndex, gameState) {
+    let focusSelector = "";
+    let focusIndex = originIndex - 1;
+    if (gameState[origin].length > 0 && focusIndex < 0) {
+        focusIndex = 0;
+    } // end if.
+
+    if (focusIndex < 0) {
+        // Set the focus to the heading for the section.
+        focusSelector = `#hdg${origin.charAt(0).toUpperCase()}${origin.substring(1)}`;
+    } else {
+        // Set the focus to the button for the previous planet.
+        let planetName = gameState[origin][focusIndex].name;
+        focusSelector = `[data-planet="${planetName}"]`;
+    } // end if else.
+
+    document.querySelector(focusSelector).focus();
+}; // end setFocus.
+
+export {createButtonList, createCardList, setFocus};
