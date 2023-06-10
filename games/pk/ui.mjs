@@ -28,12 +28,13 @@ const EditTitle  = function (playerName, total) {
 /** 
  * Track and add round total to the player total.
  * @param {String} playerName - Player name
+ * @param {String} roundTotal - The current total for the round.
  * @returns {String} an HTML template string.
  */
-const RoundTotal = function (playerName) {
+const RoundTotal = function (playerName, roundTotal) {
   return `
   <div class="roundTotal">
-    <input type="number" max="30000" step="100" value="0" aria-label="Round Total ${playerName}">
+    <input type="number" max="30000" step="100" value="${roundTotal}" aria-label="Round Total ${playerName}">
     <button data-action="add" aria-label="Add ${playerName}'s round total">Add</button>
   </div>`;
 }; // end RoundTotal.
@@ -43,13 +44,15 @@ const RoundTotal = function (playerName) {
  * @param {Integer} playerNumber - The number of the player.
  * @param playerName - Player's name.
  * @param {Integer} total - Player's total.
+ * @Param {String} roundTotal - the round total.
+ * @param {Integer} mode - 0 = display, 1 = edit.
  * @returns {String} an HTML template string.
  */
-const PlayerCard = function (playerNumber, playerName, total, mode) {
+const PlayerCard = function (playerNumber, playerName, total, roundTotal, mode) {
   return `
   <div class="card" data-player="${playerNumber}">
     ${(mode === 0) ? Title(playerName, total) : EditTitle(playerName)}
-    ${RoundTotal(playerName)}
+    ${RoundTotal(playerName, roundTotal)}
   </div>`;
 }; // end PlayerCard.
 
@@ -60,8 +63,29 @@ const PlayerCard = function (playerNumber, playerName, total, mode) {
  */
 const ListPlayers = function (players) {
   return players.map((player, playerNumber) => {
-    return PlayerCard(playerNumber, player.name, player.total, player.mode);
+    return PlayerCard(playerNumber, player.name, player.total, player.round, player.mode);
   }).join("");
 }; // end ListPlayers.
 
-export {ListPlayers};
+/** 
+ * Move the keyboard focus based on the latest interface action.
+ * @param {Integer} playerNumber - the number of the player taking the action.
+ * @param {String} action - The action just taken.
+ */
+const ManageFocus = function (playerNumber, playerAction) {
+  switch (playerAction) {
+    case "add":
+      document.querySelector(`[data-player="${playerNumber} [data-action="add"]"] `).focus();
+      break;
+    case "edit":
+      document.querySelector(`[data-player="${playerNumber} [data-action="rename"]"]`).focus();
+      break;
+    case "rename":
+      document.querySelector(`[data-player="${playerNumber}"] input[type="text"]`).focus();
+      break;
+    default:
+      // No action.
+  } // end switch playerAction
+}; // end ManageFocus.
+
+export {ListPlayers, ManageFocus};
