@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Kingsburgh Scoresheet</title>
+  </head>
+  <body>
+    <h1>Kingsburgh Scoresheet</h1>
+
+    <h2>Resources</h2>
+    <form>
+      <div>
+        <label for="gold">Gold:</label>
+        <input type="number" id="gold" step="1" value="0">
+      </div>
+      <div>
+        <label for="stone">Stone:</label>
+        <input type="number" id="stone" step="1" value="0">
+      </div>
+      <div>
+        <label for="soldier">Soldiers:</label>
+        <input type="number" id="soldier" step="1" value="0">
+      </div>
+      <div>
+        <label for="wood">Wood:</label>
+        <input type="number" id="wood" step="1" value="0">
+      </div>
+      <div>
+        <label for="vp">VP:</label>
+        <input type="number" id="vp" step="1" value="0">
+      </div>
+      <div>
+        <label for="token">+2 Toekn:</label>
+        <input type="number" id="token" step="1" value="0">
+      </div>
+    </form>
+
+    <h2>Advisors</h2>
+    <table>
+      <tr>
+        <th scope="col">Advisor</th>
+        <th scope="col">Benefit</th>
+      </tr>
+      <tr>
+        <th scope="row">1. Jestor</th>
+        <td>+1 VP</td>
+      </tr>
+      <tr>
+        <th scope="row">2. Squire</th>
+        <td>+1 gold</td>
+      </tr>
+      <tr>
+        <th scope="row">3. Architect</th>
+        <td>+1 wood</td>
+      </tr>
+      <tr>
+        <th scope="row">4. Merchant</th>
+        <td>+1 wood or +1 gold</td>
+      </tr>
+      <tr>
+        <th scope="row">Sargeant</th>
+        <td>+1 soldier</td>
+      </tr>
+      <tr>
+        <th scope="row">Alchemist</th>
+        <td>Trade 1 resource for 2 of the other (i.e., gold for wood and stone)</td>
+      </tr>
+      <tr>
+        <th scope="row">7. Astronomer</th>
+        <td>+1 resource and +2 token</td>
+      </tr>
+      <tr>
+        <th scope="row">8. Treasurer</th>
+        <td>+2 gold</td>
+      </tr>
+      <tr>
+        <th scope="row">9. Master Hunter</th>
+        <td>+1 wood and either +1 gold or +1 stone</td>
+      </tr>
+      <tr>
+        <th scope="row">10. General</th>
+        <td>+2 soldiers and you may secretly look at the monster</td>
+      </tr>
+      <tr>
+        <th scope="row">11. Swordsmith</th>
+        <td>+1 stone and either +1 gold or +1 wood</td>
+      </tr>
+      <tr>
+        <th scope="row">12. Duchess</th>
+        <td>+2 resources</td>
+      </tr>
+      <tr>
+        <th scope="row">13. Champion</th>
+        <td>+3 stone</td>
+      </tr>
+      <tr>
+        <th scope="row">14. Smuggler</th>
+        <td>-1 VP and +3 resources</td>
+      </tr>
+      <tr>
+        <th scope="row">15. Inventor</th>
+        <td>+1 gold, stone, and wood</td>
+      </tr>
+      <tr>
+        <th scope="row">16. Wizard</th>
+        <td>+4 gold</td>
+      </tr>
+      <tr>
+        <th scope="row">17. Queen</th>
+        <td>+2 resources and you may secretly look at the monster.</td>
+      </tr>
+      <tr>
+        <th scope="row">18. King</th>
+        <td>+1 gold, stone, wood, and soldier</td>
+      </tr>
+    </table>    
+
+    <h2>Buildings</h2>
+    <table>
+      <tr>
+        <th scope="col">Type 1</th>
+        <th scope="">Type 2</th>
+        <th scope="col">Type 3</th>
+        <th scope="col">Type 4</th>
+      </tr>
+      <tr>
+        <td>
+          Statue<br>
+          At the beginning of each productive season, if you have the same number on all your dice, you may reroll one of them.
+        </td>
+        <td>
+          Chapel<br>
+          At the beginning of each productive season, if the total of your dice is 7 or less, you may reroll all of them.
+        </td>
+        <td>
+          Church<br>
+          +0 in battle (becomes +1 vs. Demons)
+        </td>
+        <td>
+          Cathedral<br>
+          At the end of the game, score 1 extra VP for every 2 goods you own.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Inn<br>
+          At the end of each Summer you get a "+2" token.
+        </td>
+        <td>
+          Market<br>
+          Once per season, you may influence an Advisor whose value is one point higher or lower than the sum of the dice you are using.
+        </td>
+        <td>
+          Farms<br>
+          During each productive season, you roll one extra (white) dice. Penalty: -1 in battle.
+        </td>
+        <td>
+          Merchants' Guild<br>
+          At the beginning of each productive season, before rolling dice, you get 1 gold.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Guard Tower<br>
+          +1 in battle.
+        </td>
+        <td>
+          Blacksmith<br>
+          +1 in battle.
+        </td>
+        <td>
+          Barracks<br>
+          You pay only one good to recruit soldiers in phase 7.        
+        </td>
+        <td>
+          Wizards' Guild<br>
+          +2 in battle.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Palisade<br>
+          +1 in battle (becomes +2 vs. Zombies)
+        </td>
+        <td>
+          Stable<br>
+          You get an additional soldier when you influence an Advisor who gives you at least one soldier.        
+        </td>
+        <td>
+          Stone Wall<br>
+          +1 in battle. In addition, in battle you win draws.
+        </td>
+        <td>
+          Fortress<br>
+          +1 in battle. In addition, when you win a battle you get 1 VP on top of the normal rewards.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Barricade<br>
+          +0 in battle. (becomes +1 vs. Goblins)
+        </td>
+        <td>
+          Crane<br>
+          You pay one gold less when building in III and IV column.
+        </td>
+        <td>
+          Town Hall<br>
+          At the end of each productive season, you may pay a "+2" token or one good (any kind) to get 1 VP (only once per season).
+        </td>
+        <td>
+          Embassy<br>
+          At the end of each productive season you get 1 VP.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
