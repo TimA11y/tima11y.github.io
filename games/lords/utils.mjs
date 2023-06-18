@@ -161,4 +161,46 @@ function findCard (cards, name, type) {
   return list.indexOf(name);
 } // end findCard.
 
-export {convert, isPlural, getQuestCost, getQuestReward, getQuestTitle, findCard};
+/** 
+ * Sort function for intrigue cards
+ * @param {Object} cardA - card object.
+ * @param {Object} cardB - the second card object.
+ * 
+ */
+function sortIntrigueCards (cardA, cardB) {
+  let titleA = cardA["Name"];
+  let titleB = cardB["Name"];
+
+  if (titleA < titleB) {
+    return -1;
+  } // end if.
+
+  if (titleB < titleA) {
+    return 1;
+  } // end if.
+
+  return 0;
+} // end sortIntrigueCards.
+
+/** 
+ * Sort quest cards.
+ * @param {Object} cardA - card object.
+ * @param {Object} cardB - the second card object.
+ */
+function sortQuestCards (cardA, cardB) {
+  let titleA = cardA["Quest Name"];
+  let titleB = cardB["Quest Name"];
+
+  if (titleA < titleB) {
+    return -1;
+  } // end if.
+
+  if (titleB < titleA) {
+    return 1;
+  } // end if.
+
+  return 0;
+} // end sortIntrigueCards.
+
+
+export {convert, isPlural, getQuestCost, getQuestReward, getQuestTitle, findCard,sortIntrigueCards,sortQuestCards};

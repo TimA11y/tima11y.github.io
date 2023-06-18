@@ -1,7 +1,7 @@
 // Import modules.
 import { render } from "./reef.es.min.js";
 import {DisplayCards, Select, sendMessage} from "./ui.mjs";
-import { findCard } from "./utils.mjs";
+import { findCard, sortIntrigueCards, sortQuestCards } from "./utils.mjs";
 import {intrigue_cards} from "./intrigue.mjs";
 import {quest_cards} from "./quest.mjs";
 
@@ -28,6 +28,8 @@ const messages = document.querySelector("#messages");
 
 
 // Main
+quest_cards.sort(sortQuestCards);
+intrigue_cards.sort(sortIntrigueCards);
 render(questDeck, `<label>Quest Deck:${Select(quest_cards, "quest")}</label>`);
 render(questHand, DisplayCards(state.quest.hand, "quest", "hand"));
 render(intrigueHand, DisplayCards(state.intrigue.hand, "intrigue", "hand"));
@@ -114,11 +116,17 @@ document.body.addEventListener("click", function (event) {
       // No actions.
   } // end switch location.
 
+  state.intrigue.hand.sort(sortIntrigueCards);;
+  state.quest.hand.sort(sortQuestCards);;
+  state.intrigue.played.sort(sortIntrigueCards);
+  state.quest.played.sort(sortQuestCards);
+  
+
   render(questDeck, `<label>Quest Deck:${Select(quest_cards, "quest")}</label>`);
   render(intrigueDeck, `<label>Intrigue Deck:${Select(intrigue_cards, "intrigue")}</label>`)
   
-render(questHand, DisplayCards(state.quest.hand, "quest", "hand"));
-render(intrigueHand, DisplayCards(state.intrigue.hand, "intrigue", "hand"));
+  render(questHand, DisplayCards(state.quest.hand, "quest", "hand"));
+  render(intrigueHand, DisplayCards(state.intrigue.hand, "intrigue", "hand"));
 
 render(questPlayed, DisplayCards(state.quest.played, "quest", "played"));
 render(intriguePlayed, DisplayCards(state.intrigue.played, "intrigue", "played"));
