@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Lords of Water Deep</title>
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body>
+    <div data-location="deck"deck>
+      <h1>Decks</h1>
+      <div>
+        <div id="questDeck"></div>
+        <button data-type="quest">Draw Quest</button>
+      </div>
+      <div>
+        <div id="intrigueDeck"></div>
+        <button data-type="intrigue">Draw Intrigue</button>
+      </div>
+      <div data-location="hand">
+        <h1>Hand</h1>
+        <h2>Quests</h2>
+        <div id="questHand"></div>
+        <h2>Intrigue Cards</h2>
+        <div id="intrigueHand"></div>
+      </div>
+      <div data-location="played">
+        <h1>Played Cards</h1>
+        <h2>Quests</h2>
+        <div id="questPlayed"></div>
+        <h2>Intrigue Cards</h2>
+        <div id="intriguePlayed"></div>
+      </div>
+      <div id="messages" aria-live="assertive"></div>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
