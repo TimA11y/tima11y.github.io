@@ -1,27 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Big Foot vs. Yeti</title>
-    <link rel="stylesheet" href="index.css" >
-  </head>
-  <body>
-    <form id="deck">
-      <label for="cards">Select card:</label>
-      <select id="cards" autofocus></select>
-      <button type="submit">Deal</button>
-    </form>
-    <div id="messages" aria-live="polite"></div>
-    <h1 id="hdgHand" tabindex="-1">Hand</h1>
-    <section aria-labelledby="hdgHand">
-      <ol id="hand">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIGFoot VS Yeti — Card Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-      </ol>
-    </section>
-    <h1 id="hdgPlayed" tabindex="-1">Played Cards</h1>
-    <section aria-labelledby="hdgPlayed">
-      <ul id="played"></ul>
-    </section>
-    <script type="module" src="index.js"></script>
-  </body>
+  <header>
+    <div class="header-inner">
+      <h1>BIGFoot VS Yeti</h1>
+      <button type="button" id="btn-new-round" class="btn btn--secondary">New Game</button>
+    </div>
+  </header>
+
+  <main>
+    <p id="status-message" class="status-message" aria-live="polite" aria-atomic="true"></p>
+
+    <div class="panels">
+
+      <!-- ── Card Browser ─────────────────────────────────────────── -->
+      <section aria-labelledby="browser-heading">
+        <h2 id="browser-heading">Card Deck</h2>
+
+        <fieldset id="filter-fieldset">
+          <legend>Filter by type</legend>
+          <div class="filter-options">
+            <label>
+              <input type="radio" name="filter" value="All" checked>
+              <span class="tab-label">All</span>
+            </label>
+            <label>
+              <input type="radio" name="filter" value="Expedition">
+              <span class="tab-label">Expedition</span>
+            </label>
+            <label>
+              <input type="radio" name="filter" value="Proof">
+              <span class="tab-label">Proof</span>
+            </label>
+            <label>
+              <input type="radio" name="filter" value="Phenomenon">
+              <span class="tab-label">Phenomenon</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label for="card-browser-list" class="sr-only">Card list</label>
+        <select id="card-browser-list" size="12"></select>
+        <button type="button" id="btn-add-to-hand" class="btn btn--add">Add to Hand</button>
+      </section>
+
+      <!-- ── My Hand ─────────────────────────────────────────────── -->
+      <section aria-labelledby="hand-heading">
+        <h2 id="hand-heading">My Hand</h2>
+
+        <ul id="hand-list"></ul>
+
+        <div class="hand-toolbar">
+          <button type="button" id="btn-play-selected" class="btn btn--primary">
+            Play Selected
+          </button>
+          <button type="button" id="btn-discard-selected" class="btn btn--discard-toolbar">
+            Discard Selected
+          </button>
+        </div>
+      </section>
+
+      <!-- ── My Table ────────────────────────────────────────────── -->
+      <section aria-labelledby="table-heading">
+        <h2 id="table-heading">Tableau</h2>
+        <div id="table-content"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ── Expedition assignment dialog ────────────────────────────── -->
+  <dialog id="assign-dialog" aria-labelledby="assign-heading">
+    <h2 id="assign-heading">Assign to Expedition</h2>
+    <label for="assign-options" class="assign-label">Select an expedition:</label>
+    <select id="assign-options" size="8"></select>
+    <div class="dialog-buttons">
+      <button type="button" id="btn-assign-confirm" class="btn btn--primary">Assign</button>
+      <button type="button" id="btn-assign-cancel" class="btn btn--secondary">Cancel</button>
+    </div>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
 </html>
