@@ -71,6 +71,9 @@ header {
   background: #1a2a3a;
   color: #ffffff;
   padding: 0.75rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 .header-inner {
   display: flex;
@@ -451,4 +454,138 @@ dialog fieldset legend {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+
+/* ── Hand badge & heading count ─────────────────────────── */
+.hand-count {
+  font-size: 0.85em;
+  font-weight: normal;
+  color: #666;
+  margin-left: 0.3em;
+}
+
+.hand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #c0392b;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 1.4em;
+  height: 1.4em;
+  border-radius: 999px;
+  padding: 0 0.25em;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+
+/* ── Panel navigation (mobile only) ─────────────────────── */
+.panel-nav {
+  display: none;
+}
+
+/* ── Mobile layout (≤640px) ────────────────────────────── */
+@media (max-width: 640px) {
+  /* Tab bar */
+  .panel-nav {
+    display: flex;
+    background: #1a2a3a;
+    border-bottom: 3px solid #0d1929;
+    position: sticky;
+    top: var(--header-h, 58px);
+    z-index: 15;
+  }
+  .panel-tab {
+    flex: 1;
+    padding: 0.6rem 0.4rem;
+    min-height: 44px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.65);
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .panel-tab[aria-selected="true"] {
+    color: #ffffff;
+    border-bottom-color: #4a9fd4;
+  }
+  .panel-tab:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+
+  /* Panel visibility */
+  .panels {
+    display: block;
+    padding: 0;
+  }
+  .panels > section {
+    display: none;
+    border: none;
+    border-radius: 0;
+    border-top: 1px solid var(--color-border);
+    padding: var(--gap);
+  }
+  .panels > section.is-active {
+    display: block;
+  }
+
+  /* Card browser list — keep a sensible scroll height */
+  #card-browser-list {
+    max-height: 40vh;
+  }
+
+  /* Remove max-height cap on hand and table panels */
+  #hand-list,
+  #table-content {
+    max-height: none;
+  }
+
+  /* Status message */
+  .status-message {
+    margin: 0.5rem;
+  }
+
+  /* Touch targets (Apple HIG minimum 44px) */
+  .btn {
+    min-height: 44px;
+  }
+
+  /* Full-width hand toolbar buttons */
+  .hand-toolbar {
+    flex-direction: column;
+  }
+  .hand-toolbar .btn {
+    width: 100%;
+  }
+
+  /* Larger tap area for filter radio tabs */
+  .tab-label {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Dialog adjustments */
+  dialog {
+    padding: 1rem;
+    width: 96%;
+  }
+  #assign-options {
+    max-height: 35vh;
+    overflow-y: auto;
+  }
 }

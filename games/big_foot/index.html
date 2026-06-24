@@ -18,10 +18,16 @@
   <main>
     <p id="status-message" class="status-message" aria-live="polite" aria-atomic="true"></p>
 
+    <div class="panel-nav" role="tablist" aria-label="App sections">
+      <button class="panel-tab" role="tab" id="tab-browser" aria-selected="true" aria-controls="panel-browser" tabindex="0">Card Deck</button>
+      <button class="panel-tab" role="tab" id="tab-hand" aria-selected="false" aria-controls="panel-hand" tabindex="-1">My Hand <span class="hand-badge" id="hand-badge"></span></button>
+      <button class="panel-tab" role="tab" id="tab-table" aria-selected="false" aria-controls="panel-table" tabindex="-1">Tableau</button>
+    </div>
+
     <div class="panels">
 
       <!-- ── Card Browser ─────────────────────────────────────────── -->
-      <section aria-labelledby="browser-heading">
+      <section id="panel-browser" aria-labelledby="browser-heading">
         <h2 id="browser-heading">Card Deck</h2>
 
         <fieldset id="filter-fieldset">
@@ -52,8 +58,8 @@
       </section>
 
       <!-- ── My Hand ─────────────────────────────────────────────── -->
-      <section aria-labelledby="hand-heading">
-        <h2 id="hand-heading">My Hand</h2>
+      <section id="panel-hand" aria-labelledby="hand-heading">
+        <h2 id="hand-heading">My Hand <span class="hand-count" id="hand-count"></span></h2>
 
         <ul id="hand-list"></ul>
 
@@ -68,7 +74,7 @@
       </section>
 
       <!-- ── My Table ────────────────────────────────────────────── -->
-      <section aria-labelledby="table-heading">
+      <section id="panel-table" aria-labelledby="table-heading">
         <h2 id="table-heading">Tableau</h2>
         <div id="table-content"></div>
       </section>
