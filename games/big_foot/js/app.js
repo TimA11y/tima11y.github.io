@@ -69,6 +69,10 @@ const btnDiscardSelected = document.getElementById('btn-discard-selected');
 const btnAssignConfirm   = document.getElementById('btn-assign-confirm');
 const btnAssignCancel    = document.getElementById('btn-assign-cancel');
 const btnNewRound        = document.getElementById('btn-new-round');
+const panelNav           = document.querySelector('.panel-nav');
+const panelTabs          = panelNav ? [...panelNav.querySelectorAll('[role="tab"]')] : [];
+const handBadge          = document.getElementById('hand-badge');
+const handCount          = document.getElementById('hand-count');
 
 // ── Status message ────────────────────────────────────────────────────────────
 
@@ -76,7 +80,13 @@ function setStatus(msg) {
     statusEl.textContent = " ";  
   statusEl.textContent = msg;
 }
+// ── Hand badge ─────────────────────────────────────────────────────────────────────
 
+function updateHandBadge() {
+  const count = instances.filter(i => i.status === 'hand').length;
+  if (handBadge) handBadge.textContent = String(count);
+  if (handCount) handCount.textContent = `(${count})`;
+}
 // ── Score ─────────────────────────────────────────────────────────────────────
 
 function calcTotalScore() {
@@ -133,6 +143,7 @@ function renderBrowser() {
 function renderHand() {
   const handInsts = instances.filter(i => i.status === 'hand');
   handList.innerHTML = '';
+  updateHandBadge();
 
   if (handInsts.length === 0) {
     const li = document.createElement('li');
@@ -469,7 +480,18 @@ assignDialog.addEventListener('close', () => {
   if (resolve) resolve(null);   // Escape = cancel
   btnPlaySelected.focus();      // return focus to triggering button
 });
+// ── Panel tab switching ──────────────────────────────────────────────────────────
 
+function switchTab(panelId) {
+  panelTabs.forEach(tab => {
+    const active = tab.getAttribute('aria-controls') === panelId;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+  document.querySelectorAll('.panels > section').forEach(section => {
+    section.classList.toggle('is-active', section.id === panelId);
+  });
+}
 // ── Event listeners ───────────────────────────────────────────────────────────
 
 btnAddToHand.addEventListener('click', addSelectedToHand);
@@ -489,8 +511,36 @@ document.querySelectorAll('input[name="filter"]').forEach(radio => {
   radio.addEventListener('change', renderBrowser);
 });
 
-// ── Initialise ────────────────────────────────────────────────────────────────
+// Panel tab navigation
+panelTabs.forEach(tab => {
+  tab.addEventListener('click', () => switchTab(tab.getAttribute('aria-controls')));
+});
+
+panelNav?.addEventListener('keydown', e => {
+  const idx = panelTabs.findIndex(t => t === document.activeElement);
+  if (idx === -1) return;
+  let next = -1;
+  if (e.key === 'ArrowRight') next = (idx + 1) % panelTabs.length;
+  if (e.key === 'ArrowLeft')  next = (idx - 1 + panelTabs.length) % panelTabs.length;
+  if (next !== -1) {
+    e.preventDefault();
+    panelTabs[next].focus();
+    switchTab(panelTabs[next].getAttribute('aria-controls'));
+  }
+});
+
+// ── Initialise ────────────────────────────────────────────────────────────────────────────
 
 renderBrowser();
 renderHand();
 renderTable();
+switchTab('panel-browser');
+
+// Sync header height CSS variable for sticky panel-nav positioning
+function syncHeaderHeight() {
+  document.documentElement.style.setProperty(
+    '--header-h', document.querySelector('header').offsetHeight + 'px'
+  );
+}
+syncHeaderHeight();
+new ResizeObserver(syncHeaderHeight).observe(document.querySelector('header'));
