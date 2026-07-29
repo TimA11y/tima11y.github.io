@@ -1,0 +1,13 @@
+{
+  "name": "tima11y.github.io",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TimA11y personal site: game trackers, solutions, and blog (Eleventy).",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  }
+}
