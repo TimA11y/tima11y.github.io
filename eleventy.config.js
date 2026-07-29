@@ -9,6 +9,11 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("tnt");
   eleventyConfig.addPassthroughCopy("CNAME");
 
+  // Site chrome assets (e.g. SkipTo.js), self-hosted rather than loaded from a CDN.
+  eleventyConfig.addPassthroughCopy("src/assets");
+
+  eleventyConfig.addGlobalData("currentYear", new Date().getFullYear());
+
   return {
     dir: {
       input: "src",
