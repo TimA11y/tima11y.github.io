@@ -1,0 +1,176 @@
+[
+  {
+    "location": "Abandoned Mine",
+    "connections": [
+      "Cabin"
+    ]
+  },
+  {
+    "location": "Cabin",
+    "connections": [
+      "Abandoned Mine",
+      "Campground",
+      "North Intersection"
+    ]
+  },
+  {
+    "location": "Campground",
+    "connections": [
+      "Cabin"
+    ]
+  },
+  {
+    "location": "North Intersection",
+    "connections": [
+      "Cabin",
+      "Gas Station",
+      "High School",
+      "Motel"
+    ]
+  },
+  {
+    "location": "Gas Station",
+    "connections": [
+      "North Intersection",
+      "Diner",
+      "City Hall"
+    ]
+  },
+  {
+    "location": "High School",
+    "connections": [
+      "Sheriff’s Station",
+      "North Intersection",
+      "City Hall",
+      "South Intersection",
+      "Stadium"
+    ]
+  },
+  {
+    "location": "Motel",
+    "connections": [
+      "North Intersection",
+      "Sheriff’s Station"
+    ]
+  },
+  {
+    "location": "City Hall",
+    "connections": [
+      "Gas Station",
+      "Tavern",
+      "Town Center",
+      "High School"
+    ]
+  },
+  {
+    "location": "Diner",
+    "connections": [
+      "Ranger Station",
+      "General Store",
+      "Tavern",
+      "Gas Station"
+    ]
+  },
+  {
+    "location": "Sheriff’s Station",
+    "connections": [
+      "Motel",
+      "High School"
+    ]
+  },
+  {
+    "location": "Stadium",
+    "connections": [
+      "High School"
+    ]
+  },
+  {
+    "location": "Tavern",
+    "connections": [
+      "City Hall",
+      "Diner",
+      "Hospital"
+    ]
+  },
+  {
+    "location": "Hospital",
+    "connections": [
+      "Tavern"
+    ]
+  },
+  {
+    "location": "Town Center",
+    "connections": [
+      "City Hall",
+      "Farm",
+      "Cemetery",
+      "South Intersection"
+    ]
+  },
+  {
+    "location": "Ranger Station",
+    "connections": [
+      "Trail Head",
+      "Mansion",
+      "Diner"
+    ]
+  },
+  {
+    "location": "General Store",
+    "connections": [
+      "Diner"
+    ]
+  },
+  {
+    "location": "Farm",
+    "connections": [
+      "Town Center"
+    ]
+  },
+  {
+    "location": "Cemetery",
+    "connections": [
+      "Town Center"
+    ]
+  },
+  {
+    "location": "South Intersection",
+    "connections": [
+      "High School",
+      "Town Center",
+      "Bait Shop",
+      "Resort"
+    ]
+  },
+  {
+    "location": "Mansion",
+    "connections": [
+      "Ranger Station"
+    ]
+  },
+  {
+    "location": "Trail Head",
+    "connections": [
+      "Ranger Station"
+    ]
+  },
+  {
+    "location": "Bait Shop",
+    "connections": [
+      "South Intersection"
+    ]
+  },
+  {
+    "location": "Resort",
+    "connections": [
+      "Swimming Hole",
+      "South Intersection"
+    ]
+  },
+  {
+    "location": "Swimming Hole",
+    "connections": [
+      "Resort"
+    ]
+  }
+]

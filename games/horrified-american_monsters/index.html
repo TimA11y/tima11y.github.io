@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horrified: American Monsters</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Horrified: American Monsters</h1>
+        <p class="subtitle">Navigate the town and defeat the cryptids.</p>
+    </header>
+
+    <main>
+        <!-- Section 1: Location Connections -->
+        <section id="location-lookup" class="card">
+            <div class="section-header">
+                <svg class="section-icon" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="30" cy="30" r="28" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="30" cy="30" r="3" fill="currentColor"/>
+                    <line x1="30" y1="5" x2="30" y2="15" stroke="currentColor" stroke-width="2"/>
+                    <line x1="30" y1="45" x2="30" y2="55" stroke="currentColor" stroke-width="2"/>
+                    <line x1="5" y1="30" x2="15" y2="30" stroke="currentColor" stroke-width="2"/>
+                    <line x1="45" y1="30" x2="55" y2="30" stroke="currentColor" stroke-width="2"/>
+                    <text x="30" y="8" text-anchor="middle" font-size="8" fill="currentColor">N</text>
+                </svg>
+                <h2>Location Connections</h2>
+            </div>
+            <p class="section-description">Select a location to view all connected locations.</p>
+            
+            <div class="form-group">
+                <label for="location-select">Location</label>
+                <select id="location-select" class="form-control">
+                    <option value="">-- Select a location --</option>
+                </select>
+            </div>
+            
+            <div id="connections-result" class="result-area" aria-live="polite"></div>
+        </section>
+
+        <!-- Section 2: Path Finder -->
+        <section id="pathfinder" class="card">
+            <div class="section-header">
+                <svg class="section-icon" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M15 45 Q 20 35, 25 40 T 35 35 T 45 40" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
+                    <ellipse cx="12" cy="20" rx="4" ry="6" fill="currentColor" transform="rotate(-20 12 20)"/>
+                    <ellipse cx="18" cy="18" rx="4" ry="6" fill="currentColor" transform="rotate(-15 18 18)"/>
+                    <ellipse cx="30" cy="25" rx="4" ry="6" fill="currentColor" transform="rotate(10 30 25)"/>
+                    <ellipse cx="36" cy="28" rx="4" ry="6" fill="currentColor" transform="rotate(5 36 28)"/>
+                    <ellipse cx="48" cy="35" rx="4" ry="6" fill="currentColor" transform="rotate(25 48 35)"/>
+                </svg>
+                <h2>Find Paths Between Locations</h2>
+            </div>
+            <p class="section-description">Find all possible routes between two locations.</p>
+            
+            <div class="path-form">
+                <div class="form-group">
+                    <label for="from-select">From</label>
+                    <select id="from-select" class="form-control">
+                        <option value="">-- Select starting location --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="to-select">To</label>
+                    <select id="to-select" class="form-control">
+                        <option value="">-- Select destination --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="map-button" class="btn-primary">Map Route</button>
+            
+            <div id="paths-result" class="result-area" aria-live="polite"></div>
+        </section>
+
+        <!-- Section 3: Map Description -->
+        <section id="map-description" class="card">
+            <div class="section-header">
+                <svg class="section-icon" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="5" y="5" width="50" height="50" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <line x1="5" y1="15" x2="55" y2="15" stroke="currentColor" stroke-width="1"/>
+                    <line x1="5" y1="25" x2="55" y2="25" stroke="currentColor" stroke-width="1"/>
+                    <line x1="5" y1="35" x2="55" y2="35" stroke="currentColor" stroke-width="1"/>
+                    <line x1="5" y1="45" x2="55" y2="45" stroke="currentColor" stroke-width="1"/>
+                    <line x1="15" y1="5" x2="15" y2="55" stroke="currentColor" stroke-width="1"/>
+                    <line x1="30" y1="5" x2="30" y2="55" stroke="currentColor" stroke-width="1"/>
+                    <line x1="45" y1="5" x2="45" y2="55" stroke="currentColor" stroke-width="1"/>
+                    <circle cx="30" cy="20" r="3" fill="currentColor"/>
+                    <circle cx="22" cy="30" r="2" fill="currentColor"/>
+                    <circle cx="38" cy="35" r="2" fill="currentColor"/>
+                </svg>
+                <h2>Map Overview</h2>
+            </div>
+            
+            <details>
+                <summary><span class="disclosure-icon" aria-hidden="true">▶</span>Show/Hide Map Description</summary>
+                <div class="map-description-content">
+                    <p>The center of town is a loop of six connected locations: High School, North Intersection, Gas Station, City Hall, Town Center, and South Intersection, each one connected to the next, forming a closed loop back to High School.</p>
+                    
+                    <p>Two smaller loops branch off that central loop. First: City Hall, Gas Station, Diner, and Tavern form a second loop, giving two ways to get between City Hall and Tavern. Second: High School, Sheriff's Station, Motel, and North Intersection form a third loop, giving two ways to get between High School and North Intersection.</p>
+                    
+                    <p>Everything else is a dead-end branch off the center, and each of these locations connects to only one other place, so once you leave the ring you can't loop back — you have to retrace your steps to return.</p>
+                    
+                    <p>Off North Intersection, by way of Cabin: Cabin connects to Abandoned Mine and Campground, both dead ends.</p>
+                    
+                    <p>Off Diner, by way of Ranger Station: Ranger Station connects to Mansion and Trail Head, both dead ends. Diner also connects directly to General Store, a dead end.</p>
+                    
+                    <p>Off Tavern: Hospital is a dead end.</p>
+                    
+                    <p>Off Town Center: Farm and Cemetery are both dead ends.</p>
+                    
+                    <p>Off South Intersection: Bait Shop is a dead end. South Intersection also connects to Resort, which connects one step further to Swimming Hole, a dead end.</p>
+                    
+                    <p>Off High School directly: Stadium is a dead end.</p>
+                    
+                    <p>In short: one six-location ring at the center, two smaller loops attached to that ring, and eleven single-connection dead ends branching off in short chains of one or two steps.</p>
+                </div>
+            </details>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 TimA11y</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
