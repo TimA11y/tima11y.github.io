@@ -1,0 +1,764 @@
+/*
+  Neon-cyberpunk direction from docs/visual-design.md, with the palette
+  finalized here (see the same doc's updated "Palette roles" section for the
+  contrast-ratio math). Colors are custom properties named by ROLE, not by
+  hue, so every rule below reads as "why", not just "what color".
+*/
+
+/* Self-hosted display face for headings only (docs/visual-design.md's
+   "distinctive self-hosted angular display face" open item) — body text
+   stays on the system stack below for readability, per that doc's own
+   reasoning. A local relative url(), not a CDN link: keeps the app fully
+   self-contained per R3, works over a plain file:// open (unlike ES
+   modules, @font-face resource loads aren't blocked by the file://
+   same-origin restriction), and needs no separate license-fetch step at
+   runtime. font-display: optional means it's used only if it loads
+   near-instantly (true for a small same-origin local file) and otherwise
+   the fallback stack is used for the whole page load with no later
+   swap — avoiding the FOUT the original system-font choice was written
+   to avoid. Subset to printable ASCII + bold-only instance of the
+   upstream variable font, see fonts/OFL.txt for the license. */
+@font-face {
+  font-family: Orbitron;
+  src: url("../fonts/orbitron-bold-subset.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: optional;
+}
+
+:root {
+  --color-bg: #0d0d14;
+  --color-text: #eef0f5;
+  --color-economy: #4deeea;
+  --color-standard: #ff6ec7;
+  --color-luxury: #f9f871;
+  --color-focus: #fff;
+  --color-panel-border: #33333f;
+  --font-body: ui-sans-serif, "Segoe UI", roboto, sans-serif;
+  --font-heading: "Orbitron", var(--font-body);
+  --transition-fast: 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Motion effects (docs/visual-design.md's "glow/glitch/scanline" open      */
+
+/* item). Both hard constraints from that doc apply to everything below:   */
+
+/*   - nothing flashes faster than 3x/second (seizure-risk rule, no        */
+
+/*     exceptions) — every keyframe cycle here runs on the order of        */
+
+/*     seconds, nowhere close;                                             */
+
+/*   - every animation has a prefers-reduced-motion fallback that removes  */
+
+/*     the animation entirely, not just slows it down.                    */
+
+/* ---------------------------------------------------------------------- */
+
+@keyframes title-glow-pulse {
+  0%,
+  100% {
+    text-shadow:
+      0 0 4px var(--color-economy),
+      0 0 10px rgb(77 238 234 / 45%);
+  }
+
+  50% {
+    text-shadow:
+      0 0 8px var(--color-economy),
+      0 0 20px rgb(77 238 234 / 65%);
+  }
+}
+
+@keyframes scanline-drift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 12px;
+  }
+}
+
+/* Star Map "transporter beam-in" reveal, played once when a sector is
+   ACTUALLY newly placed (js/ui/render.js's previouslyOccupiedSectors diff
+   decides this — see .just-revealed usage below). Two parts: the star
+   itself materializes (fade/scale/glow settling to its normal static
+   glow), while a separate ::after pseudo-element on the <td> sweeps a
+   cyan band down through the cell to sell the "beaming down" look.
+   ~550ms, single pass, ease-out — nowhere near the 3-flashes/second
+   threshold above. */
+@keyframes tile-materialize {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+    text-shadow:
+      0 0 10px var(--color-economy),
+      0 0 20px var(--color-economy);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.15);
+    text-shadow:
+      0 0 14px var(--color-economy),
+      0 0 26px var(--color-economy);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+
+    /* Settles into .sector-star's own static glow (0 0 3px currentcolor)
+       so the animation's end state hands off seamlessly. */
+    text-shadow: 0 0 3px currentcolor;
+  }
+}
+
+@keyframes tile-beam-sweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.9;
+  }
+
+  70% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Defensive backstop for WCAG 1.4.10 Reflow: .star-map-scroll and
+   .market-scroll are the only elements meant to scroll horizontally.
+   Nested overflow:auto containers are supposed to stop their content's
+   min-content width from inflating an ancestor flex item's automatic
+   minimum size, but that isn't fully reliable across engines in
+   practice — this closes the gap without touching pinch-to-zoom
+   (no touch-action/user-scalable restriction here). Set on <html>, not
+   <body>: the root scrolling box in standard mode is documentElement,
+   so overflow-x on body alone doesn't stop the page itself from
+   growing a horizontal scrollbar. */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+/* Every heading site-wide gets the display face — not just the page
+   title — since docs/visual-design.md's open item was "headings" in
+   general, not h1 specifically. Body text (paragraphs, buttons, table
+   cells, list items) is untouched, still on --font-body. Orbitron's
+   glyphs are geometric/wide, so a little extra letter-spacing keeps
+   longer headings ("Founding a Corporation") from looking cramped. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+}
+
+/* Subtle CRT-style scanline overlay, drifting slowly downward. A pseudo-
+   element rather than a real DOM node: purely decorative, never enters
+   the accessibility tree at all (stronger than aria-hidden), and
+   pointer-events: none keeps it from ever intercepting a click. Opacity is
+   low enough (~2%) that it doesn't meaningfully affect any text's
+   contrast ratio underneath it — this is atmosphere, not a foreground
+   element. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(238 240 245 / 3%) 0,
+    rgb(238 240 245 / 3%) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: scanline-drift 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Footer — a visual bookend to header (same border/padding, mirrored).    */
+
+/* Placed before the higher-specificity .skip-links a below so Stylelint's */
+
+/* no-descending-specificity rule (ascending order for overlapping         */
+
+/* properties like color) is satisfied.                                   */
+
+/* ---------------------------------------------------------------------- */
+
+/* Text stays the full-contrast --color-text (not dimmed) so de-emphasis
+   comes from font-size/spacing, not a lower-contrast color that would
+   risk falling below WCAG AA (R11) for the sake of looking "muted". */
+footer {
+  padding: 1rem;
+  border-top: 1px solid var(--color-panel-border);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+footer a {
+  color: var(--color-economy);
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Skip links — standard visually-hidden-until-focused pattern (R10/R11)   */
+
+/* ---------------------------------------------------------------------- */
+
+.skip-links {
+  position: relative;
+}
+
+/* Same clip-path technique as .visually-hidden below, not the classic
+   left: -9999px off-screen trick — that old technique creates negative
+   scrollable overflow that inflates the page's scrollWidth and can trigger
+   page-level horizontal scroll at narrow viewports, which is exactly what
+   the narrow-viewport work here is trying to eliminate. */
+.skip-links a {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 0.5em 1em;
+  border: 2px solid var(--color-focus);
+  z-index: 10;
+}
+
+.skip-links a:focus {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  left: 0.5em;
+  top: 0.5em;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Focus visibility — one consistent treatment for every interactive       */
+
+/* element, since the default browser ring is easy to lose against a dark  */
+
+/* background.                                                             */
+
+/* ---------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 8px var(--color-focus);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Header                                                                  */
+
+/* ---------------------------------------------------------------------- */
+
+header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-panel-border);
+}
+
+header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+
+  /* Slow (4s), low-amplitude "neon sign" breathing glow — not a flash;
+     text color itself never changes, only the shadow's blur/opacity, so
+     this doesn't touch the title's own WCAG contrast ratio. */
+  animation: title-glow-pulse 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header h1 {
+    animation: none;
+    text-shadow:
+      0 0 4px var(--color-economy),
+      0 0 10px rgb(77 238 234 / 45%);
+  }
+}
+
+#turn-status {
+  margin: 0;
+  font-size: 1rem;
+}
+
+#contextual-hint {
+  margin-top: 0.5rem;
+}
+
+#contextual-hint summary {
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Layout — single DOM order always; a wider viewport repositions          */
+
+/* sections visually via grid-template-areas without reordering the DOM,   */
+
+/* per docs/ui-design.md's responsive strategy.                            */
+
+/* ---------------------------------------------------------------------- */
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+main > section {
+  border: 1px solid var(--color-panel-border);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+main > section > h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Game over summary                                                       */
+
+/* ---------------------------------------------------------------------- */
+
+#game-over {
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-luxury);
+  border-radius: 4px;
+}
+
+#game-over h2 {
+  margin-top: 0;
+}
+
+#final-standings-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+@media (width >= 900px) {
+  main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      "star-map your-ship"
+      "star-map market"
+      "event-log event-log";
+  }
+
+  #star-map {
+    grid-area: star-map;
+  }
+
+  #your-ship {
+    grid-area: your-ship;
+  }
+
+  #market {
+    grid-area: market;
+  }
+
+  #event-log {
+    grid-area: event-log;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Buttons — neon-outlined against the dark background, near-white text    */
+
+/* (docs/visual-design.md's "interactive elements" role). Declared before   */
+
+/* the Star Map's more specific button rules below, so cascade order       */
+
+/* matches specificity order.                                              */
+
+/* ---------------------------------------------------------------------- */
+
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 0.4em 0.8em;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    opacity var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+/* An inline text link that happens to need JS (scrolling/focusing a spot
+   inside a dialog that might not be open yet — a plain <a href="#..."> can't
+   do both), so it's a real <button> styled to read as a link. Exempt from
+   the 24x24 minimum target size (R13) the same way WCAG 2.5.8 exempts
+   inline links within a sentence. */
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  color: var(--color-economy);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.dialog-choice-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialog-choice-list button {
+  width: 100%;
+  text-align: left;
+}
+
+button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:hover:not([aria-disabled="true"], :disabled) {
+  background: var(--color-panel-border);
+
+  /* Static (non-animated) glow, driven by the existing box-shadow
+     transition already covered by --transition-fast's reduced-motion
+     override above — no separate keyframe/media-query needed here. */
+  box-shadow: 0 0 6px var(--color-text);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Star Map                                                                */
+
+/* ---------------------------------------------------------------------- */
+
+/* Only this wrapper scrolls horizontally, not the page (WCAG 1.4.10) — see
+   the comment on .star-map-scroll in index.html for why the table itself
+   can't just shrink to fit a phone-width viewport. */
+.star-map-scroll {
+  overflow-x: auto;
+}
+
+#star-map table {
+  border-collapse: collapse;
+  width: 100%;
+
+  /* Still stretches to fill its container on wide viewports (unchanged
+     from before), but won't compress cells below their natural 24px
+     min-width (R13) when the container is narrower than that — instead
+     the table overflows .star-map-scroll, which is what makes that
+     wrapper's horizontal scroll kick in on phone widths. */
+  min-width: max-content;
+}
+
+#star-map caption {
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#star-map th,
+#star-map td {
+  border: 1px solid var(--color-panel-border);
+  text-align: center;
+  padding: 0;
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+
+  /* Containing block for .just-revealed's ::after sweep pseudo-element
+     below — needs to be on the <td> (block-level), not the inline
+     .sector-star span itself. overflow: hidden clips the sweep band to
+     this cell's own bounds; without it, the band's translateY animation
+     visibly bleeds into the cell above/below during the sweep. */
+  position: relative;
+  overflow: hidden;
+}
+
+#star-map td button {
+  width: 100%;
+  height: 100%;
+  min-width: 24px;
+  min-height: 24px;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* "Something goes here" glyph for a placeable-but-not-yet-placed cell —
+   pure CSS generated content, so it needs no HTML/JS of its own. Safe
+   accessibility-wise: CSS ::before content is never exposed to the
+   accessibility tree, and the button already has an explicit
+   aria-label ("Place Sector X"), so this can't create a duplicate or
+   conflicting announcement. */
+#star-map td button::before {
+  content: "?";
+  color: var(--color-text);
+  opacity: 0.6;
+  font-weight: bold;
+}
+
+#star-map td button:hover {
+  background: var(--color-panel-border);
+
+  /* Box-shadow glow itself comes from the general button:hover rule above
+     (this selector doesn't redeclare it) — this override only needs to
+     restore the transition property that :hover would otherwise lose,
+     since `transition` is a single shorthand and the more specific
+     selector above replaces rather than merges it. */
+}
+
+.sector-star {
+  /* Decorative only — never the sole indicator of state (see the visually
+     hidden text alongside it in each cell). */
+  font-style: normal;
+  text-shadow: 0 0 3px currentcolor;
+}
+
+.sector-star.just-revealed {
+  animation: tile-materialize 550ms ease-out;
+}
+
+/* The sweep band itself. js/ui/render.js puts this same class on the <td>
+   (not just the inner .sector-star span) specifically so this can target
+   it directly here, positioned relative to `position: relative` on
+   #star-map td above — an absolutely positioned pseudo-element can't
+   cleanly hang off the inline .sector-star span itself. */
+#star-map td.just-revealed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, var(--color-economy) 45%, transparent 90%);
+  opacity: 0;
+  pointer-events: none;
+  animation: tile-beam-sweep 450ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sector-star.just-revealed {
+    animation: none;
+  }
+
+  #star-map td.just-revealed::after {
+    animation: none;
+  }
+}
+
+.sector-star[aria-hidden="true"] {
+  display: inline-block;
+}
+
+.tier-economy {
+  color: var(--color-economy);
+}
+
+.tier-standard {
+  color: var(--color-standard);
+}
+
+.tier-luxury {
+  color: var(--color-luxury);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Your Ship / Market lists                                                */
+
+/* ---------------------------------------------------------------------- */
+
+.hand-list,
+.shares-list,
+.corporation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.market-scroll {
+  overflow-x: auto;
+}
+
+.corporation-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-panel-border);
+  padding-bottom: 0.5rem;
+}
+
+.credits-display {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Event log                                                               */
+
+/* ---------------------------------------------------------------------- */
+
+#event-log ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+#event-log li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--color-panel-border);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Dialog                                                                  */
+
+/* ---------------------------------------------------------------------- */
+
+dialog {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  padding: 1.5rem;
+  max-width: 30rem;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+dialog .dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.disposition-inputs {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.disposition-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.disposition-inputs input,
+.setup-field input,
+.setup-field select,
+.setup-ai-row input,
+.setup-ai-row select {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  padding: 0.25rem;
+  font: inherit;
+}
+
+.disposition-inputs input {
+  width: 4rem;
+}
+
+.setup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.setup-ai-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.setup-ai-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
