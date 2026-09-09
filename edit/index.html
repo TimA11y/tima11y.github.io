@@ -3,18 +3,33 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web Editor</title>
+  <script src="../assets/js/skipto.min.js"></script>
 </head>
 
 <body>
-  <div>
-    <h1><label for="txtEdit">Text Editor:</label></h1>
-    <textarea cols="80" rows="30" id="txtEdit" autofocus spellcheck="true"></textarea>
-  </div>
-  <div>
-    <h2>Information</h2>
-    <div id="status" aria-live="polite">0 characters, 0 words</div>
-  </div>
+  <header>
+    <p><a href="../">TimA11y</a></p>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="../">Home</a></li>
+        <li><a href="../games/">Game Trackers</a></li>
+        <li><a href="./">Edit</a></li>
+        <li><a href="../dad_joke/">Dad Jokes</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+    <div>
+      <h1><label for="txtEdit">Text Editor:</label></h1>
+      <textarea cols="80" rows="30" id="txtEdit" autofocus spellcheck="true"></textarea>
+    </div>
+    <div>
+      <h2>Information</h2>
+      <div id="status" aria-live="polite">0 characters, 0 words</div>
+    </div>
+  </main>
   <script src="index.js"></script>
 </body>
 
