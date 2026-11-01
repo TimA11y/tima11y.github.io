@@ -1,0 +1,1753 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="description" content="An accessible offline football card game for one human and a computer. Two drives, secret calls, and a sudden-death safety."><meta name="viewport" content="width=device-width,initial-scale=1"><title>Football Sudden Death</title><style>:root{font-family:system-ui,sans-serif;color:#14291e;background:#f4f1e8;font-size:18px;line-height:1.6}*{box-sizing:border-box}body{margin:0}header{background:#123b2c;color:#fff;padding:3rem max(1rem,calc((100vw - 1100px)/2));border-bottom:7px solid #e4ba5b}h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.1;margin:.5rem 0 1rem}h2{line-height:1.3}h3{font-size:1.1rem}.eyebrow{letter-spacing:.14em;font-size:.8rem;font-weight:750}main{max-width:1140px;margin:auto;padding:1rem}section,main>details{margin:1.3rem 0;padding:1.4rem;border:1px solid #9caa9e;background:#fff;border-radius:12px}#scoreboard{background:#e4efdf;border-left:7px solid #275f3c}#score{font-weight:750;font-size:1.25rem}.grid,.card-grid,.defensive-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:1rem}.play-card,.player{border:1px solid #a5afa7;border-radius:8px;padding:1rem;background:#f7f9f4}.play-card h3{margin-top:0}.defensive-card{border-top:4px solid #8b491b}.offensive-card{border-top:4px solid #286a42}fieldset{min-width:0;border:1px solid #9caa9e;margin:1.3rem 0;padding:1rem}legend{font-weight:750;padding:0 .4rem}label{display:block}input[type=text],select{display:block;width:100%;max-width:30rem;padding:.6rem;font:inherit;margin:.3rem 0 1rem}input[type=checkbox],input[type=radio]{width:1.2rem;height:1.2rem;margin-right:.4rem;accent-color:#215737}button{font:inherit;font-weight:650;background:#194c32;color:#fff;border:2px solid #194c32;border-radius:6px;padding:.6rem 1rem;cursor:pointer;margin:.4rem .5rem .4rem 0}button.secondary{background:#fff;color:#194c32}button:disabled{opacity:.55;cursor:default}summary{cursor:pointer;font-weight:650;padding:.35rem}a{color:#154e83}:focus-visible,[tabindex="-1"]:focus{outline:3px solid #a14b00;outline-offset:4px}.error{color:#9e1b1b;font-weight:700}.card-statistics{margin:.5rem 0}.card-statistics dt,.calculation dt{font-weight:600}.card-statistics dd{margin:0 0 .5rem}.band-caption,.matchup-perspective,.statistics-note{font-size:.9rem}.card-matchups{padding-left:1.3rem}.player p{margin:.25rem 0}.result{border-left:5px solid #c58b25;padding:1rem;background:#fff6df}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.skip{position:absolute;top:-100px;background:#fff;padding:1rem;z-index:10}.skip:focus{top:0}footer{text-align:center;padding:2rem}li{margin-bottom:.4rem}[hidden]{display:none!important}dialog{color:#14291e;background:#fff;border:2px solid #194c32;border-radius:12px;width:min(95vw,850px);max-height:90vh;overflow:auto;padding:1.5rem}dialog::backdrop{background:rgb(0 0 0 / .65)}@media(max-width:500px){section,main>details{padding:1rem}main{padding:.5rem}}
+/* Responsive and touch refinements. No fixed-width game panels. */
+html{scroll-padding-top:1rem}body{overflow-wrap:anywhere}header{padding-top:2rem;padding-bottom:2rem}main{width:100%}section,article,fieldset,.grid>*{min-width:0}input[type=text],select{min-height:48px;max-width:100%}button,summary{min-height:48px}label:has(input[type=radio]),label:has(input[type=checkbox]){min-height:48px;padding:.35rem 0;cursor:pointer}input[type=checkbox],input[type=radio]{vertical-align:middle;flex-shrink:0}button{max-width:100%;white-space:normal;touch-action:manipulation}summary{touch-action:manipulation}.player:has(input:checked),.play-card:has(input:checked){border:2px solid #194c32;background:#e6efdf}a.skip{left:1rem}.quick-nav{display:flex;flex-wrap:wrap;gap:.5rem 1rem}.quick-nav a{padding:.5rem 0;min-height:44px}#scoreboard h2{margin-top:0}dialog{max-width:calc(100% - 1rem)}@media(min-width:760px){#setup-form{max-width:38rem}.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(min-width:1100px){.card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:540px){:root{font-size:17px}header{padding:1.5rem 1rem}main{padding:.6rem}section,main>details{padding:.85rem}.grid,.card-grid,.defensive-cards{grid-template-columns:minmax(0,1fr)}fieldset{padding:.65rem}button{width:100%;margin:.4rem 0}dialog{padding:1rem}.play-card,.player{padding:.8rem}}@media(forced-colors:active){.player:has(input:checked),.play-card:has(input:checked){outline:2px solid Highlight}button{border:2px solid ButtonText}}
+</style></head>
+<body><a class="skip" href="#decision">Skip to current decision</a><header><p class="eyebrow">CALL THE PLAY. TAKE YOUR CHANCE.</p><h1>Football Sudden Death</h1><p>Name your team. Pick your players each down. Take the field on both sides of the ball.</p></header>
+<main><p><button id="open-reference" type="button" aria-haspopup="dialog">Explore play cards and bands</button></p><details><summary>Rules and keyboard help</summary>
+<h2>Game rules</h2>
+<p>Name both teams and call heads or tails. The coin-flip winner chooses offense or defense first. The computer chooses randomly if it wins. The first team starts at its own 25-yard line, first and ten. Each team gets one offensive drive, unless a safety ends the game early. After both drives, the higher total score wins; equal scores are a tie. There is no clock.</p>
+<h3>Cards and substitutions</h3>
+<p>Before every regular down, each side secretly selects exactly two different featured players from four and exactly three different calls from six. All cards are reusable, and selections reset each down. Both teams can use the same players from their respective pools.</p>
+<ol><li>Reveal both sides’ two players and three calls together.</li><li>Each side secretly keeps everything, replaces one player, or replaces one call. You cannot replace both.</li><li>Reveal both updated selections together.</li><li>Each side secretly chooses one final call from its updated three.</li><li>Reveal both final calls and resolve the play.</li></ol>
+<p>The computer commits its initial selections, substitution, and final call before seeing your corresponding choices. Its choices are random. Player cards add one for their matching offensive play or subtract one against it. Add the offensive player bonus to the play matchup modifier, subtract the defensive player bonus, and cap the result between minus three and plus three. The resulting band determines yardage and risks. Runs and completed passes use weighted yardage tables. Passes may be incomplete, intercepted, or sacked. A sack loses two six-sided dice in yards. Eligible runs, completions, and sacks may fumble, with a 50 percent chance of recovery by each side. A touchdown or safety takes effect before a fumble check. There are no turnover returns; interceptions occur at the previous line of scrimmage, while fumbles occur at the play’s resulting spot.</p>
+<h3>Drives and field position</h3>
+<p>Four downs to gain ten yards. A touchdown scores six, followed by an extra-point attempt: roll three six-sided dice, with a total of six or higher scoring one point. There are no two-point conversions. A successful field goal scores three. Following a touchdown or successful field goal on the first drive, the second team starts at its own 25.</p>
+<p>After a turnover or failed fourth down, the second team starts at the resulting ball position, going the opposite direction. After a punt it starts at the punt’s resulting position; a punt reaching the end zone is a touchback at the receiving team’s own 20. No returns are played. A safety awards two points to the defense and immediately ends the entire game. Compare the total scores to determine the winner or tie. No safety kick follows.</p>
+<h3>Punts and field goals</h3>
+<p>Punts use three six-sided dice: totals of 3 through 7 yield 30 net yards, 8 through 13 yield 40, and 14 through 18 yield 50. Punting ends the drive.</p>
+<p>Field goal distance is the distance to the goal line plus 17 yards. A three-dice total must meet or exceed six for kicks up to 39 yards, eight for 40 through 49 yards, ten for 50 through 59 yards, and thirteen for 60 through 65 yards. Longer kicks are unavailable. A missed field goal gives the opponent possession at the kicking spot, seven yards behind the line of scrimmage, or its own 20 if that is farther from its goal line. No blocked kicks or field goal returns are simulated.</p>
+<p>You may kick before any regular down, before revealing cards. On fourth down the computer attempts a field goal within 65 yards and punts otherwise. It does not go for fourth down. Kicks end the current offensive possession; after the second possession, compare the scores.</p>
+<h3>Keyboard and screen-reader help</h3>
+<p>Tab and Shift+Tab move between controls. Space toggles checkboxes; arrow keys select radio options. Enter activates buttons. On touchscreens, use your screen reader’s usual swipe and double-tap gestures. Heading navigation reaches the current decision, computer calls, rosters, and game log. Each new decision receives keyboard focus. Use Read score and situation for an announcement. Selection counts are announced as you choose cards.</p>
+<p>Card details start collapsed; activate Details for a play to read its statistics and matchups. Card previews use band zero; actual results apply matchup and player bonuses. The Explore play cards and bands dialog lets you inspect every band without changing the game. Escape or Close reference closes the dialog and returns focus. The game works offline with all files kept together. Refreshing or closing it resets the game; progress is not saved.</p>
+</details>
+
+<section id="scoreboard" aria-labelledby="score-title" hidden><h2 id="score-title">Score and situation</h2><p id="score"></p><p id="situation"></p><button id="read-situation" type="button">Read score and situation</button></section>
+<section id="decision" aria-labelledby="decision-title"></section>
+<section id="opponent" aria-labelledby="opponent-title" hidden></section>
+<section id="rosters" aria-labelledby="rosters-title" hidden></section>
+<section id="history" aria-labelledby="log-title" hidden><h2 id="log-title">Game log</h2><p id="empty-log">No plays yet.</p><ol id="game-log"></ol></section>
+<dialog id="card-reference" aria-labelledby="reference-title" aria-describedby="reference-help"><h2 id="reference-title">Play card and band reference</h2><button id="close-reference" type="button">Close reference</button><p id="reference-help">Choose any offensive or defensive play and an offensive outcome band. For a defensive card, also choose the offensive play whose yardage and risks you want to inspect. This reference does not change the game. Press Escape to close.</p><form id="reference-form"><label for="reference-card">Offensive or defensive play card</label><select id="reference-card"></select><label for="reference-band">Offensive outcome band</label><select id="reference-band"></select><div id="reference-opposition" hidden><label for="reference-offense">Opposing offensive play for yardage and risks</label><select id="reference-offense"></select></div><button type="submit">Display card data</button></form><div id="reference-output"></div></dialog><p id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p></main><footer>Football Sudden Death · Offline playable mockup</footer><script>
+(function(root){const data = {
+  "status": "Revised setup-advantage prototype; see statistical_review.md for validation and remaining balance questions",
+  "offense_view_matchups": {
+    "Inside Run": {
+      "Inside Run Defense": -3,
+      "Edge Contain": -1,
+      "Short Coverage": 0,
+      "Deep Coverage": 2,
+      "Blitz": -1,
+      "Balanced Defense": 0
+    },
+    "Outside Run": {
+      "Inside Run Defense": 1,
+      "Edge Contain": -3,
+      "Short Coverage": -1,
+      "Deep Coverage": 2,
+      "Blitz": 1,
+      "Balanced Defense": 0
+    },
+    "Slant Pass": {
+      "Inside Run Defense": 2,
+      "Edge Contain": 1,
+      "Short Coverage": -3,
+      "Deep Coverage": 1,
+      "Blitz": 2,
+      "Balanced Defense": 0
+    },
+    "Screen Pass": {
+      "Inside Run Defense": -1,
+      "Edge Contain": -2,
+      "Short Coverage": -1,
+      "Deep Coverage": 1,
+      "Blitz": 3,
+      "Balanced Defense": 0
+    },
+    "Deep Pass": {
+      "Inside Run Defense": 2,
+      "Edge Contain": 1,
+      "Short Coverage": 2,
+      "Deep Coverage": -3,
+      "Blitz": -2,
+      "Balanced Defense": 0
+    },
+    "Play Action": {
+      "Inside Run Defense": 3,
+      "Edge Contain": 1,
+      "Short Coverage": 1,
+      "Deep Coverage": -2,
+      "Blitz": -3,
+      "Balanced Defense": 0
+    }
+  },
+  "defense_view_matchups": {
+    "Inside Run Defense": {
+      "Inside Run": 3,
+      "Outside Run": -1,
+      "Slant Pass": -2,
+      "Screen Pass": 1,
+      "Deep Pass": -2,
+      "Play Action": -3
+    },
+    "Edge Contain": {
+      "Inside Run": 1,
+      "Outside Run": 3,
+      "Slant Pass": -1,
+      "Screen Pass": 2,
+      "Deep Pass": -1,
+      "Play Action": -1
+    },
+    "Short Coverage": {
+      "Inside Run": 0,
+      "Outside Run": 1,
+      "Slant Pass": 3,
+      "Screen Pass": 1,
+      "Deep Pass": -2,
+      "Play Action": -1
+    },
+    "Deep Coverage": {
+      "Inside Run": -2,
+      "Outside Run": -2,
+      "Slant Pass": -1,
+      "Screen Pass": -1,
+      "Deep Pass": 3,
+      "Play Action": 2
+    },
+    "Blitz": {
+      "Inside Run": 1,
+      "Outside Run": -1,
+      "Slant Pass": -2,
+      "Screen Pass": -3,
+      "Deep Pass": 2,
+      "Play Action": 3
+    },
+    "Balanced Defense": {
+      "Inside Run": 0,
+      "Outside Run": 0,
+      "Slant Pass": 0,
+      "Screen Pass": 0,
+      "Deep Pass": 0,
+      "Play Action": 0
+    }
+  },
+  "bands": {
+    "Inside Run": [
+      {
+        "band": -3,
+        "minimum": -4,
+        "most_likely": -2,
+        "maximum": 1,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": 0.05,
+        "yardage_weights": [
+          0.06333333333333332,
+          0.18999999999999997,
+          0.31666666666666665,
+          0.2322222222222222,
+          0.14777777777777773,
+          0.05
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": -4,
+        "most_likely": -1,
+        "maximum": 3,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.333333333333333,
+          3.6666666666666665,
+          5.0,
+          4.0,
+          3.0,
+          2.0,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": -3,
+        "most_likely": 1,
+        "maximum": 6,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.2,
+          3.4,
+          2.6,
+          1.8,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": -2,
+        "most_likely": 3,
+        "maximum": 10,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": -1,
+        "most_likely": 4,
+        "maximum": 12,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.5,
+          4.0,
+          3.5,
+          3.0,
+          2.5,
+          2.0,
+          1.5,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": -1,
+        "most_likely": 5,
+        "maximum": 14,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": 0.94,
+        "yardage_weights": [
+          0.02250000000000004,
+          0.03750000000000007,
+          0.050615384615384604,
+          0.06507692307692307,
+          0.07953846153846153,
+          0.09400000000000001,
+          0.10846153846153846,
+          0.09882051282051281,
+          0.08917948717948716,
+          0.07953846153846153,
+          0.0698974358974359,
+          0.06025641025641025,
+          0.050615384615384604,
+          0.04097435897435897,
+          0.03133333333333333,
+          0.02169230769230769
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": -1,
+        "most_likely": 6,
+        "maximum": 16,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": 0.95,
+        "yardage_weights": [
+          0.019444444444444476,
+          0.030555555555555603,
+          0.04118497109826589,
+          0.05216763005780346,
+          0.06315028901734103,
+          0.07413294797687861,
+          0.08511560693641618,
+          0.09609826589595374,
+          0.08841040462427743,
+          0.08072254335260115,
+          0.07303468208092484,
+          0.06534682080924854,
+          0.057658959537572246,
+          0.04997109826589595,
+          0.04228323699421965,
+          0.03459537572254335,
+          0.026907514450867046,
+          0.01921965317919075
+        ]
+      }
+    ],
+    "Outside Run": [
+      {
+        "band": -3,
+        "minimum": -6,
+        "most_likely": -3,
+        "maximum": 1,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.333333333333333,
+          3.6666666666666665,
+          5.0,
+          4.0,
+          3.0,
+          2.0,
+          1.0
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": -5,
+        "most_likely": -1,
+        "maximum": 4,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.2,
+          3.4,
+          2.6,
+          1.8,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": -4,
+        "most_likely": 1,
+        "maximum": 8,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": -3,
+        "most_likely": 3,
+        "maximum": 14,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.6666666666666665,
+          2.333333333333333,
+          3.0,
+          3.6666666666666665,
+          4.333333333333334,
+          5.0,
+          4.636363636363637,
+          4.272727272727273,
+          3.909090909090909,
+          3.5454545454545454,
+          3.1818181818181817,
+          2.8181818181818183,
+          2.4545454545454546,
+          2.090909090909091,
+          1.7272727272727273,
+          1.3636363636363638,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": -2,
+        "most_likely": 4,
+        "maximum": 17,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.6666666666666665,
+          2.333333333333333,
+          3.0,
+          3.6666666666666665,
+          4.333333333333334,
+          5.0,
+          4.6923076923076925,
+          4.384615384615385,
+          4.076923076923077,
+          3.769230769230769,
+          3.4615384615384617,
+          3.1538461538461537,
+          2.8461538461538463,
+          2.5384615384615383,
+          2.230769230769231,
+          1.9230769230769231,
+          1.6153846153846154,
+          1.3076923076923077,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": -1,
+        "most_likely": 5,
+        "maximum": 20,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.6666666666666665,
+          2.333333333333333,
+          3.0,
+          3.6666666666666665,
+          4.333333333333334,
+          5.0,
+          4.733333333333333,
+          4.466666666666667,
+          4.2,
+          3.933333333333333,
+          3.6666666666666665,
+          3.4,
+          3.1333333333333333,
+          2.8666666666666667,
+          2.6,
+          2.333333333333333,
+          2.0666666666666664,
+          1.8,
+          1.5333333333333332,
+          1.2666666666666666,
+          1.0
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": 0,
+        "most_likely": 7,
+        "maximum": 24,
+        "completion_percent": null,
+        "sack_percent": 0,
+        "interception_percent": 0,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5714285714285714,
+          2.142857142857143,
+          2.7142857142857144,
+          3.2857142857142856,
+          3.857142857142857,
+          4.428571428571429,
+          5.0,
+          4.764705882352941,
+          4.529411764705882,
+          4.294117647058823,
+          4.0588235294117645,
+          3.823529411764706,
+          3.588235294117647,
+          3.3529411764705883,
+          3.1176470588235294,
+          2.8823529411764706,
+          2.6470588235294117,
+          2.4117647058823533,
+          2.1764705882352944,
+          1.9411764705882353,
+          1.7058823529411766,
+          1.4705882352941178,
+          1.2352941176470589,
+          1.0
+        ]
+      }
+    ],
+    "Slant Pass": [
+      {
+        "band": -3,
+        "minimum": 0,
+        "most_likely": 3,
+        "maximum": 8,
+        "completion_percent": 10,
+        "sack_percent": 8,
+        "interception_percent": 5,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.333333333333333,
+          3.6666666666666665,
+          5.0,
+          4.2,
+          3.4,
+          2.6,
+          1.8,
+          1.0
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": 0,
+        "most_likely": 4,
+        "maximum": 10,
+        "completion_percent": 28,
+        "sack_percent": 7,
+        "interception_percent": 4,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.333333333333334,
+          3.6666666666666665,
+          3.0,
+          2.333333333333333,
+          1.6666666666666665,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": 1,
+        "most_likely": 5,
+        "maximum": 12,
+        "completion_percent": 48,
+        "sack_percent": 6,
+        "interception_percent": 3,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": 2,
+        "most_likely": 7,
+        "maximum": 14,
+        "completion_percent": 66,
+        "sack_percent": 5,
+        "interception_percent": 2,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": 3,
+        "most_likely": 8,
+        "maximum": 16,
+        "completion_percent": 72,
+        "sack_percent": 4,
+        "interception_percent": 1.5,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.5,
+          4.0,
+          3.5,
+          3.0,
+          2.5,
+          2.0,
+          1.5,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": 4,
+        "most_likely": 9,
+        "maximum": 18,
+        "completion_percent": 78,
+        "sack_percent": 3,
+        "interception_percent": 1,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.555555555555555,
+          4.111111111111111,
+          3.6666666666666665,
+          3.2222222222222223,
+          2.7777777777777777,
+          2.333333333333333,
+          1.8888888888888888,
+          1.4444444444444444,
+          1.0
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": 5,
+        "most_likely": 10,
+        "maximum": 20,
+        "completion_percent": 84,
+        "sack_percent": 2,
+        "interception_percent": 0.5,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.6,
+          4.2,
+          3.8,
+          3.4,
+          3.0,
+          2.6,
+          2.2,
+          1.8,
+          1.4,
+          1.0
+        ]
+      }
+    ],
+    "Screen Pass": [
+      {
+        "band": -3,
+        "minimum": -5,
+        "most_likely": 0,
+        "maximum": 7,
+        "completion_percent": 12,
+        "sack_percent": 12,
+        "interception_percent": 3,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": -4,
+        "most_likely": 1,
+        "maximum": 9,
+        "completion_percent": 35,
+        "sack_percent": 8,
+        "interception_percent": 2.5,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.5,
+          4.0,
+          3.5,
+          3.0,
+          2.5,
+          2.0,
+          1.5,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": -3,
+        "most_likely": 2,
+        "maximum": 11,
+        "completion_percent": 57,
+        "sack_percent": 5,
+        "interception_percent": 2,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.555555555555555,
+          4.111111111111111,
+          3.6666666666666665,
+          3.2222222222222223,
+          2.7777777777777777,
+          2.333333333333333,
+          1.8888888888888888,
+          1.4444444444444444,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": -2,
+        "most_likely": 3,
+        "maximum": 13,
+        "completion_percent": 75,
+        "sack_percent": 3,
+        "interception_percent": 1.5,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.6,
+          4.2,
+          3.8,
+          3.4,
+          3.0,
+          2.6,
+          2.2,
+          1.8,
+          1.4,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": -1,
+        "most_likely": 4,
+        "maximum": 16,
+        "completion_percent": 80,
+        "sack_percent": 2,
+        "interception_percent": 1,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.666666666666666,
+          4.333333333333334,
+          4.0,
+          3.6666666666666665,
+          3.3333333333333335,
+          3.0,
+          2.666666666666667,
+          2.333333333333333,
+          2.0,
+          1.6666666666666665,
+          1.3333333333333333,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": 0,
+        "most_likely": 5,
+        "maximum": 19,
+        "completion_percent": 85,
+        "sack_percent": 1.5,
+        "interception_percent": 0.75,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.714285714285714,
+          4.428571428571429,
+          4.142857142857142,
+          3.857142857142857,
+          3.5714285714285716,
+          3.2857142857142856,
+          3.0,
+          2.7142857142857144,
+          2.428571428571429,
+          2.142857142857143,
+          1.8571428571428572,
+          1.5714285714285714,
+          1.2857142857142856,
+          1.0
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": 1,
+        "most_likely": 6,
+        "maximum": 23,
+        "completion_percent": 90,
+        "sack_percent": 1,
+        "interception_percent": 0.5,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.764705882352941,
+          4.529411764705882,
+          4.294117647058823,
+          4.0588235294117645,
+          3.823529411764706,
+          3.588235294117647,
+          3.3529411764705883,
+          3.1176470588235294,
+          2.8823529411764706,
+          2.6470588235294117,
+          2.4117647058823533,
+          2.1764705882352944,
+          1.9411764705882353,
+          1.7058823529411766,
+          1.4705882352941178,
+          1.2352941176470589,
+          1.0
+        ]
+      }
+    ],
+    "Deep Pass": [
+      {
+        "band": -3,
+        "minimum": 5,
+        "most_likely": 12,
+        "maximum": 22,
+        "completion_percent": 6,
+        "sack_percent": 16,
+        "interception_percent": 8,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5714285714285714,
+          2.142857142857143,
+          2.7142857142857144,
+          3.2857142857142856,
+          3.857142857142857,
+          4.428571428571429,
+          5.0,
+          4.6,
+          4.2,
+          3.8,
+          3.4,
+          3.0,
+          2.6,
+          2.2,
+          1.8,
+          1.4,
+          1.0
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": 6,
+        "most_likely": 14,
+        "maximum": 26,
+        "completion_percent": 18,
+        "sack_percent": 14,
+        "interception_percent": 7,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0,
+          4.666666666666666,
+          4.333333333333334,
+          4.0,
+          3.6666666666666665,
+          3.3333333333333335,
+          3.0,
+          2.666666666666667,
+          2.333333333333333,
+          2.0,
+          1.6666666666666665,
+          1.3333333333333333,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": 8,
+        "most_likely": 16,
+        "maximum": 30,
+        "completion_percent": 28,
+        "sack_percent": 12,
+        "interception_percent": 6,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0,
+          4.714285714285714,
+          4.428571428571429,
+          4.142857142857142,
+          3.857142857142857,
+          3.5714285714285716,
+          3.2857142857142856,
+          3.0,
+          2.7142857142857144,
+          2.428571428571429,
+          2.142857142857143,
+          1.8571428571428572,
+          1.5714285714285714,
+          1.2857142857142856,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": 10,
+        "most_likely": 20,
+        "maximum": 36,
+        "completion_percent": 39,
+        "sack_percent": 10,
+        "interception_percent": 5,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4,
+          3.8,
+          4.2,
+          4.6,
+          5.0,
+          4.75,
+          4.5,
+          4.25,
+          4.0,
+          3.75,
+          3.5,
+          3.25,
+          3.0,
+          2.75,
+          2.5,
+          2.25,
+          2.0,
+          1.75,
+          1.5,
+          1.25,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": 12,
+        "most_likely": 23,
+        "maximum": 42,
+        "completion_percent": 44,
+        "sack_percent": 8,
+        "interception_percent": 4,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.3636363636363638,
+          1.7272727272727273,
+          2.090909090909091,
+          2.4545454545454546,
+          2.8181818181818183,
+          3.1818181818181817,
+          3.5454545454545454,
+          3.909090909090909,
+          4.272727272727273,
+          4.636363636363637,
+          5.0,
+          4.789473684210526,
+          4.578947368421053,
+          4.368421052631579,
+          4.157894736842105,
+          3.9473684210526314,
+          3.736842105263158,
+          3.526315789473684,
+          3.3157894736842106,
+          3.1052631578947367,
+          2.894736842105263,
+          2.6842105263157894,
+          2.473684210526316,
+          2.263157894736842,
+          2.052631578947368,
+          1.8421052631578947,
+          1.631578947368421,
+          1.4210526315789473,
+          1.2105263157894737,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": 14,
+        "most_likely": 26,
+        "maximum": 48,
+        "completion_percent": 49,
+        "sack_percent": 6,
+        "interception_percent": 3,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.3333333333333333,
+          1.6666666666666665,
+          2.0,
+          2.333333333333333,
+          2.666666666666667,
+          3.0,
+          3.3333333333333335,
+          3.6666666666666665,
+          4.0,
+          4.333333333333334,
+          4.666666666666666,
+          5.0,
+          4.818181818181818,
+          4.636363636363637,
+          4.454545454545455,
+          4.272727272727273,
+          4.090909090909091,
+          3.909090909090909,
+          3.727272727272727,
+          3.5454545454545454,
+          3.3636363636363638,
+          3.1818181818181817,
+          3.0,
+          2.8181818181818183,
+          2.6363636363636367,
+          2.4545454545454546,
+          2.2727272727272725,
+          2.090909090909091,
+          1.9090909090909092,
+          1.7272727272727273,
+          1.5454545454545454,
+          1.3636363636363638,
+          1.1818181818181819,
+          1.0
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": 16,
+        "most_likely": 30,
+        "maximum": 55,
+        "completion_percent": 54,
+        "sack_percent": 4,
+        "interception_percent": 2,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.2857142857142856,
+          1.5714285714285714,
+          1.8571428571428572,
+          2.142857142857143,
+          2.428571428571429,
+          2.7142857142857144,
+          3.0,
+          3.2857142857142856,
+          3.5714285714285716,
+          3.857142857142857,
+          4.142857142857142,
+          4.428571428571429,
+          4.714285714285714,
+          5.0,
+          4.84,
+          4.68,
+          4.52,
+          4.359999999999999,
+          4.2,
+          4.04,
+          3.88,
+          3.72,
+          3.56,
+          3.4,
+          3.24,
+          3.08,
+          2.92,
+          2.76,
+          2.6,
+          2.44,
+          2.2800000000000002,
+          2.12,
+          1.96,
+          1.8,
+          1.6400000000000001,
+          1.48,
+          1.32,
+          1.16,
+          1.0
+        ]
+      }
+    ],
+    "Play Action": [
+      {
+        "band": -3,
+        "minimum": 1,
+        "most_likely": 5,
+        "maximum": 12,
+        "completion_percent": 8,
+        "sack_percent": 14,
+        "interception_percent": 6,
+        "fumble_percent_given_possession": 3,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.428571428571429,
+          3.857142857142857,
+          3.2857142857142856,
+          2.7142857142857144,
+          2.142857142857143,
+          1.5714285714285714,
+          1.0
+        ]
+      },
+      {
+        "band": -2,
+        "minimum": 2,
+        "most_likely": 6,
+        "maximum": 15,
+        "completion_percent": 24,
+        "sack_percent": 12,
+        "interception_percent": 5,
+        "fumble_percent_given_possession": 2.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          4.555555555555555,
+          4.111111111111111,
+          3.6666666666666665,
+          3.2222222222222223,
+          2.7777777777777777,
+          2.333333333333333,
+          1.8888888888888888,
+          1.4444444444444444,
+          1.0
+        ]
+      },
+      {
+        "band": -1,
+        "minimum": 3,
+        "most_likely": 8,
+        "maximum": 18,
+        "completion_percent": 42,
+        "sack_percent": 10,
+        "interception_percent": 4,
+        "fumble_percent_given_possession": 2.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.8,
+          2.6,
+          3.4,
+          4.2,
+          5.0,
+          4.6,
+          4.2,
+          3.8,
+          3.4,
+          3.0,
+          2.6,
+          2.2,
+          1.8,
+          1.4,
+          1.0
+        ]
+      },
+      {
+        "band": 0,
+        "minimum": 4,
+        "most_likely": 10,
+        "maximum": 22,
+        "completion_percent": 58,
+        "sack_percent": 8,
+        "interception_percent": 3,
+        "fumble_percent_given_possession": 2.25,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.6666666666666665,
+          2.333333333333333,
+          3.0,
+          3.6666666666666665,
+          4.333333333333334,
+          5.0,
+          4.666666666666666,
+          4.333333333333334,
+          4.0,
+          3.6666666666666665,
+          3.3333333333333335,
+          3.0,
+          2.666666666666667,
+          2.333333333333333,
+          2.0,
+          1.6666666666666665,
+          1.3333333333333333,
+          1.0
+        ]
+      },
+      {
+        "band": 1,
+        "minimum": 5,
+        "most_likely": 12,
+        "maximum": 26,
+        "completion_percent": 64,
+        "sack_percent": 6,
+        "interception_percent": 2,
+        "fumble_percent_given_possession": 2,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5714285714285714,
+          2.142857142857143,
+          2.7142857142857144,
+          3.2857142857142856,
+          3.857142857142857,
+          4.428571428571429,
+          5.0,
+          4.714285714285714,
+          4.428571428571429,
+          4.142857142857142,
+          3.857142857142857,
+          3.5714285714285716,
+          3.2857142857142856,
+          3.0,
+          2.7142857142857144,
+          2.428571428571429,
+          2.142857142857143,
+          1.8571428571428572,
+          1.5714285714285714,
+          1.2857142857142856,
+          1.0
+        ]
+      },
+      {
+        "band": 2,
+        "minimum": 6,
+        "most_likely": 14,
+        "maximum": 30,
+        "completion_percent": 70,
+        "sack_percent": 4,
+        "interception_percent": 1.5,
+        "fumble_percent_given_possession": 1.75,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0,
+          4.75,
+          4.5,
+          4.25,
+          4.0,
+          3.75,
+          3.5,
+          3.25,
+          3.0,
+          2.75,
+          2.5,
+          2.25,
+          2.0,
+          1.75,
+          1.5,
+          1.25,
+          1.0
+        ]
+      },
+      {
+        "band": 3,
+        "minimum": 7,
+        "most_likely": 16,
+        "maximum": 35,
+        "completion_percent": 76,
+        "sack_percent": 2,
+        "interception_percent": 1,
+        "fumble_percent_given_possession": 1.5,
+        "positive_yardage_target": null,
+        "yardage_weights": [
+          1.0,
+          1.4444444444444444,
+          1.8888888888888888,
+          2.333333333333333,
+          2.7777777777777777,
+          3.2222222222222223,
+          3.6666666666666665,
+          4.111111111111111,
+          4.555555555555555,
+          5.0,
+          4.789473684210526,
+          4.578947368421053,
+          4.368421052631579,
+          4.157894736842105,
+          3.9473684210526314,
+          3.736842105263158,
+          3.526315789473684,
+          3.3157894736842106,
+          3.1052631578947367,
+          2.894736842105263,
+          2.6842105263157894,
+          2.473684210526316,
+          2.263157894736842,
+          2.052631578947368,
+          1.8421052631578947,
+          1.631578947368421,
+          1.4210526315789473,
+          1.2105263157894737,
+          1.0
+        ]
+      }
+    ]
+  },
+  "offense_fumble_recovery_percent": 50,
+  "sack_loss_dice": [
+    6,
+    6
+  ]
+}; root.SidelineTableData = data; if(typeof module !== 'undefined' && module.exports) module.exports = data;})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script>
+<script>
+/* Version 4 rules. The adjacent rules-data.js is the tested table snapshot. */
+(function(root){
+  'use strict';
+  const data=root.SidelineTableData || (typeof require==='function'?require('./rules-data.js'):null);
+  if(!data)throw Error('Version 4 outcome tables are missing.');
+  const offense=Object.keys(data.offense_view_matchups);
+  const defense=Object.keys(data.defense_view_matchups);
+  const descriptions=['Dependable gains through the middle.','Attack the edge with more risk and upside.','A quick throw for short-to-medium gains.','Use the defense’s pressure against it.','A difficult throw with the biggest gains.','Fake the run before throwing a pass.'];
+  const defensiveDescriptions=['Crowd the middle to stop inside runs.','Protect the edges against runs and screens.','Challenge quick passes and support the run.','Protect against long passes.','Send pressure; risk screens and quick throws.','Avoid a strong commitment to one threat.'];
+  const match=offense.map(p=>defense.map(d=>data.offense_view_matchups[p][d]));
+  const players=[{id:'hugh',name:'Hugh “Three Yards” Mann',position:'Running back',play:0},{id:'miles',name:'Miles Sideways',position:'Running back',play:1},{id:'otto',name:'Otto Catch',position:'Wide receiver',play:2},{id:'seymour',name:'Seymour Downfield',position:'Quarterback',play:4}];
+  const defenders=[{id:'brock',name:'Brock Wall',position:'Defensive tackle',play:0},{id:'cliff',name:'Cliff Boundary',position:'Defensive end',play:1},{id:'reed',name:'Reed DeScreen',position:'Linebacker',play:3},{id:'will',name:'Will B. Waiting',position:'Cornerback',play:4}];
+  function die(random=Math.random){return 1+Math.floor(random()*6);}
+  function roll(random=Math.random){return [die(random),die(random),die(random)];}
+  function sampleYards(row,random){
+    const weights=row.yardage_weights,total=weights.reduce((a,b)=>a+b,0);
+    let draw=random()*total;
+    for(let i=0;i<weights.length;i++){draw-=weights[i];if(draw<0)return row.minimum+i;}
+    return row.maximum;
+  }
+  function resolve(play,call,offBonus=0,defBonus=0,random=Math.random,ball=null){
+    if(!Number.isInteger(play)||play<0||play>=offense.length||!Number.isInteger(call)||call<0||call>=defense.length)throw Error('Invalid play or defensive call.');
+    const matchup=match[play][call],uncapped=matchup+offBonus-defBonus,band=Math.max(-3,Math.min(3,uncapped));
+    const row=data.bands[offense[play]][band+3];
+    let type='Run',yards=0,sackDice=null,turnover=false,fumbled=false,recovery=null;
+    if(play<2){yards=sampleYards(row,random);type=yards>0?'Run gain':yards<0?'Run loss':'No gain';}
+    else{
+      const draw=random()*100;
+      if(draw<row.sack_percent){sackDice=[die(random),die(random)];yards=-sackDice[0]-sackDice[1];type='Sack';}
+      else if(draw<row.sack_percent+row.interception_percent){type='Interception';turnover=true;}
+      else if(draw<row.sack_percent+row.interception_percent+row.completion_percent){yards=sampleYards(row,random);type='Completed pass';}
+      else type='Incomplete pass';
+    }
+    // Field boundaries end a play before the fumble check in this draft.
+    const boundary=ball!==null&&!turnover&&(ball+yards>=100?'touchdown':ball+yards<=0?'safety':null);
+    if(!turnover&&!boundary&&(play<2||type==='Sack'||type==='Completed pass')){
+      fumbled=random()*100<row.fumble_percent_given_possession;
+      if(fumbled){recovery=random()<.5?'Offense':'Defense';turnover=recovery==='Defense';}
+    }
+    return {play,call,matchup,offBonus,defBonus,uncapped,band,row,type,yards,sackDice,fumbled,recovery,turnover,boundary};
+  }
+  function kickNeeded(distance){return distance>65?null:distance<=39?6:distance<=49?8:distance<=59?10:13;}
+  function puntYards(total){return total<=7?30:total<=13?40:50;}
+  function spot(ball){return ball===50?'At midfield':ball<50?`At your own ${ball}-yard line`:`At the opponent’s ${100-ball}-yard line`;}
+  function advance(ball,line,down,yards){
+    const next=ball+yards;
+    if(next>=100)return {ball:100,line:100,down,ended:true,touchdown:true};
+    if(next<=0)return {ball:0,line,down,ended:true,safety:true};
+    if(next>=line)return {ball:next,line:Math.min(100,next+10),down:1,ended:false,firstDown:true};
+    return {ball:next,line,down:down+1,ended:down===4,turnoverOnDowns:down===4};
+  }
+  const api={data,offense,defense,descriptions,defensiveDescriptions,match,players,defenders,roll,sampleYards,resolve,kickNeeded,puntYards,spot,advance};
+  root.SidelineRules=api;
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script>
+<script>
+/* Card presentation only: all figures come from the unchanged version 4 tables. */
+(function(root){
+  'use strict';
+  const R=root.SidelineRules || (typeof require==='function'?require('./game.js'):null);
+  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const spoken=n=>n>0?`plus ${n}`:n<0?`minus ${-n}`:'zero';
+  const signed=n=>n>0?`+${n}`:n<0?`−${-n}`:'0';
+  const bonus=n=>`<span aria-hidden="true">${signed(n)}</span><span class="sr-only">${spoken(n)}</span>`;
+  const fmt=n=>Number(n.toFixed(2)).toString();
+  function statistics(play,band){
+    const row=R.data.bands[R.offense[play]][band+3];
+    const total=row.yardage_weights.reduce((a,b)=>a+b,0);
+    const mean=row.yardage_weights.reduce((sum,w,i)=>sum+w*(row.minimum+i),0)/total;
+    const passing=play>=2;
+    const average=passing?mean*row.completion_percent/100-7*row.sack_percent/100:mean;
+    const turnover=passing?row.interception_percent+(row.completion_percent+row.sack_percent)/100*row.fumble_percent_given_possession/2:row.fumble_percent_given_possession/2;
+    return {row,mean,average,turnover,passing};
+  }
+  function statsHTML(play,band){
+    const {row,mean,average,turnover,passing}=statistics(play,band);
+    return `<p class="band-caption">${R.offense[play]}, offensive outcome band ${spoken(band)}.</p><dl class="card-statistics"><dt>Yardage range${passing?' on a completed pass':''}</dt><dd>${row.minimum} to ${row.maximum} yards</dd><dt>Most likely ${passing?'completed-pass':'run'} yardage</dt><dd>${row.most_likely} yards</dd><dt>Average yardage per called play</dt><dd>${fmt(average)} yards</dd>${passing?`<dt>Average yardage on a completed pass</dt><dd>${fmt(mean)} yards</dd>`:''}<dt>Completion chance</dt><dd>${passing?`${row.completion_percent}%`:'Not applicable; running play'}</dd><dt>Interception chance per called play</dt><dd>${passing?row.interception_percent:0}%</dd><dt>Sack chance per called play</dt><dd>${passing?row.sack_percent:0}%</dd>${passing?`<dt>Incompletion chance per called play</dt><dd>${fmt(100-row.completion_percent-row.interception_percent-row.sack_percent)}%</dd><dt>Sack loss</dt><dd>2 to 12 yards; average 7 yards</dd>`:''}<dt>Fumble chance on an eligible ${passing?'completion or sack':'run'}</dt><dd>${row.fumble_percent_given_possession}%</dd><dt>Defense recovery chance after a fumble</dt><dd>50%</dd><dt>Total turnover chance per called play</dt><dd>${fmt(turnover)}%</dd></dl><p class="statistics-note">Averages and risks describe the table before field boundaries. Touchdowns and safeties end the play before a fumble check. ${passing?'Average yardage per called play includes completions, incompletions, interceptions, and sack losses.':''}</p>`;
+  }
+  function playerName(p,defensive=false){return `${p.name} (${defensive?'−1 against':'+1 to'} ${R.offense[p.play]})`;}
+  function resultHTML(result,offensivePlayers=[],defensivePlayers=[]){
+    const playerRows=(players,defensive)=>players.map(p=>`<li>${esc(playerName(p,defensive))}: ${p.play===result.play?(defensive?'minus 1':'plus 1'):'zero; bonus does not apply to this play'}.</li>`).join('');
+    return `<div class="calculation"><h3>Play calculations</h3><p>Offensive play: ${R.offense[result.play]}. Defensive play: ${R.defense[result.call]}.</p><dl><dt>Play matchup modifier, offensive perspective</dt><dd>${bonus(result.matchup)}</dd><dt>Offensive player modifiers</dt><dd>${bonus(result.offBonus)}</dd><dt>Defensive player modifiers</dt><dd>${bonus(-result.defBonus)}</dd><dt>Combined modifier before the band limit</dt><dd>${spoken(result.matchup)} plus ${result.offBonus} offensive bonus minus ${result.defBonus} defensive reduction equals ${spoken(result.uncapped)}.</dd><dt>Outcome band used</dt><dd>${spoken(result.band)}; capped at minus 3 to plus 3.</dd></dl><h4>Offensive players</h4><ul>${playerRows(offensivePlayers,false)}</ul><h4>Defensive players</h4><ul>${playerRows(defensivePlayers,true)}</ul><h3>Data for the band used</h3>${statsHTML(result.play,result.band)}</div>`;
+  }
+  function card(index,{defensive=false,context='guide',selection=null,showDetails=true}={}){
+    const title=(defensive?R.defense:R.offense)[index];
+    const id=`${context}-${defensive?'def':'off'}-${index}`;
+    const play=defensive?0:index;
+    const list=(defensive?R.offense:R.defense).map((name,i)=>{
+      const value=defensive?-R.match[i][index]:R.match[index][i];
+      return `<li>${name}: ${bonus(value)}</li>`;
+    }).join('');
+    return `<article class="play-card ${defensive?'defensive-card':'offensive-card'}" data-play-card data-offense="${play}"><h3 id="${id}-title">${selection?`<label><input type="${selection.type}" name="${selection.name}" value="${index}" ${selection.checked?'checked':''}> ${title}</label>`:title}</h3>${showDetails?`<details class="play-card-body"><summary>Details for ${title}</summary><p>${defensive?R.defensiveDescriptions[index]:R.descriptions[index]}</p>${defensive?`<p>Defensive cards have no independent yardage or risk table. These band-zero figures are shown for each possible offensive play, before applying this defense’s matchup modifier.</p>${R.offense.map((name,p)=>`<h4>${name}: band-zero results</h4>${statsHTML(p,0)}`).join('')}`:`<div class="card-stats-output">${statsHTML(play,0)}</div>`}<h4>Modifiers against all opposing plays</h4><p class="matchup-perspective">Matchup modifiers: positive favors the ${defensive?'defense':'offense'}. ${defensive?'Reverse the sign to get the offensive outcome modifier. ':''}Apply the matchup once; player bonuses are separate.</p><ul class="card-matchups">${list}</ul></details>`:''}</article>`;
+  }
+  const api={statistics,statsHTML,card,playerName,resultHTML};
+  root.SidelineCards=api;
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script>
+<script>
+(function(root){
+ 'use strict';
+ const R=root.SidelineRules||(typeof require==='function'?require('./game.js'):null);
+ const pick=(list,count,random)=>{const pool=[...list],out=[];while(out.length<count)out.push(pool.splice(Math.floor(random()*pool.length),1)[0]);return out;};
+ class Match {
+  constructor(name,random=Math.random,options={}){
+   const names=[name,options.opponent||'Away Aces'].map(n=>String(n||'').trim());
+   if(names.some(n=>!n||n.length>40))throw Error('Enter both team names, each up to 40 characters.');
+   if(names[0].toLowerCase()===names[1].toLowerCase())throw Error('Use different names for the two teams.');
+   if(!['heads','tails'].includes(options.call||'heads'))throw Error('Call heads or tails.');
+   this.names=names;this.random=random;this.scores=[0,0];this.drive=0;this.log=[];
+   this.coinCall=options.call||'heads';this.coinResult=random()<.5?'heads':'tails';
+   this.coinWinner=this.coinCall===this.coinResult?0:1;
+   this.computerChoice=this.coinWinner===1?(random()<.5?'offense':'defense'):null;
+   this.phase='coin';this.rosters=[{offense:[],defense:[]},{offense:[],defense:[]}];
+   this.log.push('Coin flip: '+this.coinResult+'. '+this.names[this.coinWinner]+' won the toss.');
+  }
+  chooseFirst(choice){
+   if(this.phase!=='coin')throw Error('The coin flip is already complete.');
+   if(this.coinWinner===1)choice=this.computerChoice;
+   if(!['offense','defense'].includes(choice))throw Error('Choose offense or defense first.');
+   this.firstOffense=choice==='offense'?this.coinWinner:1-this.coinWinner;
+   this.log.push(this.names[this.coinWinner]+' chose '+choice+' first. '+this.names[this.firstOffense]+' starts at its own 25-yard line.');
+   this.startDrive(25);
+  }
+  clearSelections(){this.lastResult=null;this.rosters=[{offense:[],defense:[]},{offense:[],defense:[]}];this.look=[];this.cpuLook=[];this.cpuCall=null;this.cpuAdjustment=null;this.adjustmentMessage='';const pool=this.humanOffense?R.defenders:R.players;this.initialComputer={players:pick(pool,2,this.random).map(p=>p.id),calls:pick([0,1,2,3,4,5],3,this.random)};}
+  startDrive(spot=25){this.ball=spot;this.line=Math.min(100,spot+10);this.down=1;this.nextStart=null;this.clearSelections();this.phase='look';this.last='';}
+  get humanOffense(){return this.attacking===0;}
+  get attacking(){return this.drive===0?this.firstOffense:1-this.firstOffense;}
+  get defending(){return 1-this.attacking;}
+  get kickPlan(){if(!this.humanOffense&&this.down===4){return R.kickNeeded(117-this.ball)===null?'punt':'fieldgoal';}return null;}
+  reveal(calls,players){
+   if(this.phase!=='look'||this.kickPlan)throw Error('Choose calls only before a regular down.');
+   if(calls.length!==3||new Set(calls).size!==3||calls.some(c=>!Number.isInteger(c)||c<0||c>5))throw Error('Choose exactly three different calls.');
+   const side=this.humanOffense?'offense':'defense',pool=this.humanOffense?R.players:R.defenders;
+   if(!Array.isArray(players)||players.length!==2||new Set(players).size!==2||players.some(id=>!pool.some(p=>p.id===id)))throw Error(`Choose exactly two different ${side==='offense'?'offensive':'defensive'} players for this down.`);
+   this.rosters[0][side]=[...players];
+   const cpuSide=this.humanOffense?'defense':'offense',cpuPool=this.humanOffense?R.defenders:R.players;
+   this.rosters[1][cpuSide]=[...this.initialComputer.players];
+   this.look=[...calls];this.cpuLook=[...this.initialComputer.calls];
+   // Commit the computer's optional substitution before the human supplies theirs.
+   const type=pick(['none','player','play'],1,this.random)[0];
+   this.cpuAdjustment={type};
+   if(type==='player'){this.cpuAdjustment.outgoing=pick(this.rosters[1][cpuSide],1,this.random)[0];this.cpuAdjustment.incoming=pick(cpuPool.filter(p=>!this.rosters[1][cpuSide].includes(p.id)),1,this.random)[0].id;}
+   if(type==='play'){this.cpuAdjustment.outgoing=pick(this.cpuLook,1,this.random)[0];this.cpuAdjustment.incoming=pick([0,1,2,3,4,5].filter(p=>!this.cpuLook.includes(p)),1,this.random)[0];}
+   this.phase='adjust';
+  }
+  adjust(change){
+   if(this.phase!=='adjust')throw Error('Substitutions are available only after the initial reveal.');
+   const side=this.humanOffense?'offense':'defense',cpuSide=this.humanOffense?'defense':'offense',pool=this.humanOffense?R.players:R.defenders,cpuPool=this.humanOffense?R.defenders:R.players;
+   if(!change||!['none','player','play'].includes(change.type))throw Error('Choose no substitution, one player, or one play.');
+   const current=change.type==='player'?this.rosters[0][side]:this.look,available=change.type==='player'?pool.map(p=>p.id):[0,1,2,3,4,5];
+   if(change.type!=='none'&&(!current.includes(change.outgoing)||!available.includes(change.incoming)||current.includes(change.incoming)))throw Error('Replace one displayed card with a different card from your remaining choices.');
+   const label=p=>p.name+' ('+(R.players.includes(p)?'+1 to':'−1 against')+' '+R.offense[p.play]+')';
+   const describe=(c,players,calls)=>c.type==='none'?'kept all players and plays':`replaced ${c.type==='player'?label(players.find(p=>p.id===c.outgoing)):calls[c.outgoing]} with ${c.type==='player'?label(players.find(p=>p.id===c.incoming)):calls[c.incoming]}`;
+   this.adjustmentMessage=`${this.names[0]} ${describe(change,pool,this.humanOffense?R.offense:R.defense)}. ${this.names[1]} ${describe(this.cpuAdjustment,cpuPool,this.humanOffense?R.defense:R.offense)}.`;
+   if(change.type==='player')this.rosters[0][side]=current.map(p=>p===change.outgoing?change.incoming:p);
+   if(change.type==='play')this.look=current.map(p=>p===change.outgoing?change.incoming:p);
+   const cpu=this.cpuAdjustment;
+   if(cpu.type==='player')this.rosters[1][cpuSide]=this.rosters[1][cpuSide].map(p=>p===cpu.outgoing?cpu.incoming:p);
+   if(cpu.type==='play')this.cpuLook=this.cpuLook.map(p=>p===cpu.outgoing?cpu.incoming:p);
+   this.phase='review';
+  }
+  beginCall(){
+   if(this.phase!=='review')throw Error('Review both updated selections before choosing a final play.');
+   this.cpuCall=pick(this.cpuLook,1,this.random)[0];this.phase='call';
+  }
+  bonus(team,side,play){return this.rosters[team][side].filter(id=>(side==='offense'?R.players:R.defenders).find(p=>p.id===id).play===play).length;}
+  resolve(call){
+   if(this.phase!=='call'||!this.look.includes(call))throw Error('Choose one of your three revealed calls.');
+   const play=this.humanOffense?call:this.cpuCall,def=this.humanOffense?this.cpuCall:call;
+   const result=R.resolve(play,def,this.bonus(this.attacking,'offense',play),this.bonus(this.defending,'defense',play),this.random,this.ball);
+   this.lastResult=result;
+   let text=`${this.names[this.attacking]} called ${R.offense[play]}. ${this.names[this.defending]} called ${R.defense[def]}. ${result.type}. ${result.yards>=0?'Gain of':'Loss of'} ${Math.abs(result.yards)} yards.`;
+   if(result.sackDice)text+=` Sack dice: ${result.sackDice.join(' and ')}.`;
+   if(result.fumbled)text+=` Fumble recovered by the ${result.recovery.toLowerCase()}.`;
+   if(result.turnover){this.ball=Math.max(1,Math.min(99,this.ball+result.yards));this.nextStart=100-this.ball;this.phase='drive-end';text+=' Turnover. Drive over. No return.';}
+   else {const next=R.advance(this.ball,this.line,this.down,result.yards);Object.assign(this,{ball:next.ball,line:next.line,down:next.down});
+    if(next.touchdown){this.scores[this.attacking]+=6;this.nextStart=25;this.phase='extra';text+=' Touchdown! Six points.';}
+    else if(next.safety){this.scores[this.defending]+=2;this.safetyEnded=true;this.phase='finished';text+=` Safety! Two points for ${this.names[this.defending]}. Game over. ${this.verdict}`;}
+    else if(next.turnoverOnDowns){this.nextStart=100-this.ball;this.phase='drive-end';text+=' Turnover on downs. Drive over.';}
+    else {this.phase='result';if(next.firstDown)text+=' First down.';}
+   }
+   this.last=text;this.log.push(text);return result;
+  }
+  kick(kind){
+   if(this.phase!=='look'||!['punt','fieldgoal'].includes(kind)||(!this.humanOffense&&kind!==this.kickPlan))throw Error('A kick is not available now.');
+   const distance=117-this.ball,needed=R.kickNeeded(distance);if(kind==='fieldgoal'&&needed===null)throw Error('Field goal is beyond the 65-yard limit.');
+   const dice=R.roll(this.random),total=dice.reduce((a,b)=>a+b,0);
+   if(kind==='fieldgoal'){const good=total>=needed;this.nextStart=good?25:Math.max(20,107-this.ball);if(good)this.scores[this.attacking]+=3;this.last=`${this.names[this.attacking]}: ${distance}-yard field goal ${good?'good. Three points.':'missed.'} Dice ${dice.join(', ')}; total ${total}. Drive over.`;}
+   else {const landing=this.ball+R.puntYards(total);this.nextStart=landing>=100?20:100-landing;this.last=`${this.names[this.attacking]} punted ${R.puntYards(total)} net yards. Dice ${dice.join(', ')}; total ${total}.${landing>=100?' Touchback.':''} Drive over.`;}
+   this.lastResult=null;this.phase='drive-end';this.log.push(this.last);
+  }
+  extra(){if(this.phase!=='extra')throw Error('No extra point is pending.');this.lastResult=null;const dice=R.roll(this.random),total=dice.reduce((a,b)=>a+b,0),good=total>=6;if(good)this.scores[this.attacking]++;this.last=`${this.names[this.attacking]}: extra point ${good?'good. One point.':'missed.'} Dice ${dice.join(', ')}; total ${total}. Drive over.`;this.log.push(this.last);this.phase='drive-end';}
+  next(){if(this.phase==='result'){this.clearSelections();this.phase='look';}else if(this.phase==='drive-end'){if(this.drive===0){const spot=this.nextStart;this.drive=1;this.startDrive(spot);}else this.phase='finished';}else throw Error('Complete the current decision first.');}
+  get verdict(){return this.scores[0]===this.scores[1]?`Tie game. Both teams finished with ${this.scores[0]} points.`:`${this.names[this.scores[0]>this.scores[1]?0:1]} wins, ${Math.max(...this.scores)} to ${Math.min(...this.scores)}.`;}
+ }
+ root.FootballMatch=Match;if(typeof module!=='undefined'&&module.exports)module.exports=Match;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script>
+<script>
+(()=>{
+ 'use strict';
+ const R=window.SidelineRules,C=window.SidelineCards,$=id=>document.getElementById(id),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const checked=name=>[...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el=>el.value);
+ let m;
+ const title=t=>`<h2 id="decision-title" tabindex="-1">${t}</h2>`;
+ const focus=()=>$('decision-title').focus();
+ function error(message){$('error').textContent=message;$('error').focus();}
+ const errorHTML='<p id="error" class="error" tabindex="-1"></p>';
+ function playerOptions(pool,side){return pool.map((p,i)=>`<div class="player"><label><input type="checkbox" name="${side}" value="${p.id}" > <strong>${esc(C.playerName(p,side==='defense'))}</strong></label><p>${p.position}. ${side==='offense'?'+1 to':'−1 against'} ${R.offense[p.play]}.</p></div>`).join('');}
+ function setup(){
+  m=null;for(const id of ['scoreboard','opponent','rosters','history'])$(id).hidden=true;
+  $('decision').innerHTML=title('Name both teams and call the coin flip')+'<p>You coach your team against the computer. The toss winner chooses offense or defense first.</p><form id="setup-form"><label for="human-name">Your team name</label><input id="human-name" type="text" maxlength="40" autocomplete="off" required><label for="computer-name">Computer team name</label><input id="computer-name" type="text" maxlength="40" autocomplete="off" required><fieldset><legend>Your coin flip call</legend><label><input type="radio" name="coin" value="heads" checked> Heads</label><label><input type="radio" name="coin" value="tails"> Tails</label></fieldset>'+errorHTML+'<button type="submit">Flip the coin</button></form>';
+  $('setup-form').onsubmit=e=>{e.preventDefault();try{m=new window.FootballMatch($('human-name').value,Math.random,{opponent:$('computer-name').value,call:checked('coin')[0]});render();focus();}catch(e){error(e.message);}};
+ }
+ function roster(){
+  $('rosters').hidden=false;$('rosters').innerHTML='<h2 id="rosters-title">Featured players for this down</h2>'+m.rosters.map((team,t)=>`<h3>${esc(m.names[t])}${t===0?' (you)':' (computer)'}</h3>`+['offense','defense'].map(side=>`<p><strong>${side==='offense'?'Offense':'Defense'}:</strong> ${team[side].length?team[side].map(id=>{const p=(side==='offense'?R.players:R.defenders).find(p=>p.id===id);return `${esc(p.name)} (${p.position}; ${side==='offense'?'+1 to':'−1 against'} ${R.offense[p.play]})`;}).join('; '):'None selected for this down'}.</p>`).join('')).join('');
+ }
+ function selections(){return '<h3>Your revealed selections</h3><p><strong>Players:</strong> '+m.rosters[0][m.humanOffense?'offense':'defense'].map(id=>esc(C.playerName((m.humanOffense?R.players:R.defenders).find(p=>p.id===id),!m.humanOffense))).join('; ')+'</p><p><strong>Plays:</strong> '+m.look.map(p=>(m.humanOffense?R.offense:R.defense)[p]).join('; ')+'</p><h3>Computer’s revealed selections</h3><p><strong>Players:</strong> '+m.rosters[1][m.humanOffense?'defense':'offense'].map(id=>esc(C.playerName((m.humanOffense?R.defenders:R.players).find(p=>p.id===id),m.humanOffense))).join('; ')+'</p><p><strong>Plays:</strong> '+m.cpuLook.map(p=>(m.humanOffense?R.defense:R.offense)[p]).join('; ')+'</p>';}
+ function substitutionFields(){
+  const type=checked('substitution')[0],pool=m.humanOffense?R.players:R.defenders,ids=m.rosters[0][m.humanOffense?'offense':'defense'];
+  const current=type==='player'?ids.map(id=>({id,name:C.playerName(pool.find(p=>p.id===id),!m.humanOffense)})):m.look.map(p=>({id:p,name:(m.humanOffense?R.offense:R.defense)[p]}));
+  const remaining=type==='player'?pool.filter(p=>!ids.includes(p.id)).map(p=>({...p,name:C.playerName(p,!m.humanOffense)})):(m.humanOffense?R.offense:R.defense).map((name,id)=>({id,name})).filter(p=>!m.look.includes(p.id));
+  $('substitution-fields').innerHTML=type==='none'?'':('<label for="swap-out">'+(type==='player'?'Player':'Play')+' to replace</label><select id="swap-out">'+current.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('')+'</select><label for="swap-in">Replacement '+(type==='player'?'player':'play')+'</label><select id="swap-in">'+remaining.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('')+'</select>');
+ }
+ function situation(){
+  const score=m.names[0]+' (you): '+m.scores[0]+'. '+m.names[1]+' (computer): '+m.scores[1]+'. ';
+  if(m.phase==='coin')return score+'Coin flip: '+m.coinResult+'. '+m.names[m.coinWinner]+' won.';
+  if(m.phase==='finished')return score+'Game complete. '+m.verdict;
+  const ordinal=['','First','Second','Third','Fourth'];
+  return score+'Drive '+(m.drive+1)+' of 2. '+m.names[m.attacking]+' on offense; you are '+(m.humanOffense?'attacking':'defending')+'. '+(['extra','drive-end'].includes(m.phase)?'Drive complete.':ordinal[Math.min(m.down,4)]+' and '+(m.line===100?'goal':m.line-m.ball)+'. Ball '+R.spot(m.ball).toLowerCase()+'.');
+ }
+ function opponent(){
+  $('opponent').hidden=false;
+  $('opponent').innerHTML='<h2 id="opponent-title">Computer’s revealed calls</h2>'+(['adjust','review','call'].includes(m.phase)?`<p>${m.phase==='call'?esc(m.names[1])+' has committed to one of these three calls.':'Both sides have revealed their players and three plays.'}</p><div class="defensive-cards">${m.cpuLook.map(p=>C.card(p,{defensive:m.humanOffense,context:'computer'})).join('')}</div>`:'<p>Computer calls are revealed after you confirm your three possible calls.</p>');
+ }
+ function render(){
+  $('scoreboard').hidden=false;$('score').textContent=`${m.names[0]} (you): ${m.scores[0]} · ${m.names[1]} (computer): ${m.scores[1]}`;$('situation').textContent=situation();
+  if(m.phase==='coin'){
+   $('opponent').hidden=true;$('rosters').hidden=true;
+   const won=m.coinWinner===0;
+   $('decision').innerHTML=title('Coin flip result')+'<p>You called '+m.coinCall+'. The coin landed '+m.coinResult+'. '+esc(m.names[m.coinWinner])+' won the toss.</p>'+(won?'<fieldset><legend>Choose your starting role</legend><label><input type="radio" name="first-role" value="offense" checked> Offense first</label><label><input type="radio" name="first-role" value="defense"> Defense first</label></fieldset>':'<p>The computer chooses '+m.computerChoice+' first.</p>')+'<button id="start-drive">Start the first drive</button>';
+   $('start-drive').onclick=()=>{m.chooseFirst(won?checked('first-role')[0]:undefined);render();focus();};return;
+  }
+  roster();opponent();$('history').hidden=false;$('empty-log').hidden=m.log.length>0;$('game-log').innerHTML=m.log.map(t=>`<li>${esc(t)}</li>`).join('');
+  if(m.phase==='look'&&m.kickPlan){$('decision').innerHTML=title('The computer chooses a kick')+`<p>${esc(m.names[1])} will ${m.kickPlan==='punt'?'punt':`attempt a ${117-m.ball}-yard field goal`}. This ends its offensive drive.</p><button id="cpu-kick">Resolve computer kick</button>`;$('cpu-kick').onclick=()=>{m.kick(m.kickPlan);render();focus();};return;}
+  if(m.phase==='look'){
+   const list=m.humanOffense?R.offense:R.defense,side=m.humanOffense?'offense':'defense',pool=m.humanOffense?R.players:R.defenders;
+   $('decision').innerHTML=title(m.humanOffense?'Choose offensive players and plays':'Choose defensive players and calls')+'<p>Choose two players and three possible calls for this down. Details appear here and with the computer’s revealed calls.</p><fieldset aria-describedby="player-count error"><legend>Your '+(m.humanOffense?'offensive':'defensive')+' players: choose two from four</legend><div class="grid">'+playerOptions(pool,side)+'</div></fieldset><p id="player-count">0 of 2 players selected for this down.</p><fieldset aria-describedby="call-count error"><legend>Your possible calls</legend><div class="card-grid">'+list.map((_,p)=>C.card(p,{defensive:!m.humanOffense,context:'initial',selection:{type:'checkbox',name:'look',checked:false}})).join('')+'</div></fieldset><p id="call-count">0 of 3 calls selected.</p>'+errorHTML+'<button id="reveal">Reveal both sides’ players and plays</button>'+(m.humanOffense?`<details><summary>End this drive with a kick instead</summary><p>Field goal distance: ${117-m.ball} yards. ${R.kickNeeded(117-m.ball)===null?'Beyond the 65-yard limit.':'Three dice must total at least '+R.kickNeeded(117-m.ball)+'.'}</p><button id="fieldgoal" ${R.kickNeeded(117-m.ball)===null?'disabled':''}>Attempt field goal</button><button id="punt" class="secondary">Punt and end my drive</button></details>`:'');
+   document.querySelectorAll('input[name="look"]').forEach(el=>el.onchange=()=>{$('call-count').textContent=`${checked('look').length} of 3 calls selected.`;$('announcer').textContent=$('call-count').textContent;});
+   document.querySelectorAll('input[name="'+side+'"]').forEach(el=>el.onchange=()=>{$('player-count').textContent=checked(side).length+' of 2 players selected for this down.';$('announcer').textContent=$('player-count').textContent;});
+   $('reveal').onclick=()=>{try{m.reveal(checked('look').map(Number),checked(side));render();focus();}catch(e){error(e.message);}};
+   if(m.humanOffense)for(const kind of ['fieldgoal','punt'])$(kind).onclick=()=>{m.kick(kind);render();focus();};
+  }else if(m.phase==='adjust'){
+   $('decision').innerHTML=title('Initial reveal — choose one optional substitution')+'<p>Both sides revealed two players and three plays together. The computer has already chosen its optional substitution, which stays hidden until you confirm yours.</p>'+selections()+'<fieldset><legend>Your optional substitution</legend><label><input type="radio" name="substitution" value="none" checked> Keep all players and plays</label><label><input type="radio" name="substitution" value="player"> Replace one player card</label><label><input type="radio" name="substitution" value="play"> Replace one play card</label></fieldset><div id="substitution-fields"></div>'+errorHTML+'<button id="confirm-substitution">Confirm substitution and reveal both sides</button>';
+   document.querySelectorAll('input[name="substitution"]').forEach(el=>el.onchange=substitutionFields);
+   $('confirm-substitution').onclick=()=>{try{const type=checked('substitution')[0],change={type};if(type!=='none'){change.outgoing=type==='play'?Number($('swap-out').value):$('swap-out').value;change.incoming=type==='play'?Number($('swap-in').value):$('swap-in').value;}m.adjust(change);render();focus();}catch(e){error(e.message);}};
+  }else if(m.phase==='review'){
+   $('decision').innerHTML=title('Both updated selections revealed')+'<p>'+esc(m.adjustmentMessage)+'</p>'+selections()+'<p>Review both sides’ final two players and three plays, then continue to your secret final choice.</p><button id="begin-call">Choose my final play</button>';
+   $('begin-call').onclick=()=>{m.beginCall();render();focus();};
+  }else if(m.phase==='call'){
+
+   $('decision').innerHTML=title(m.humanOffense?'Make your offensive call':'Make your defensive call')+selections()+'<p>The computer has committed to its call. Review its three possible calls below, then choose yours.</p><a href="#opponent-title" id="review">Review computer’s revealed calls</a><fieldset aria-describedby="error"><legend>Your secret final call</legend><div class="grid">'+m.look.map(p=>C.card(p,{defensive:!m.humanOffense,context:'final',showDetails:false,selection:{type:'radio',name:'final',checked:false}})).join('')+'</div></fieldset>'+errorHTML+'<button id="resolve">Lock my call and reveal the result</button>';
+   $('review').onclick=e=>{e.preventDefault();$('opponent-title').setAttribute('tabindex','-1');$('opponent-title').focus();};
+   $('resolve').onclick=()=>{try{const choices=checked('final');if(!choices.length)throw Error('Choose your final call.');m.resolve(Number(choices[0]));render();focus();}catch(e){error(e.message);}};
+  }else if(m.phase==='finished'){
+   $('opponent').hidden=true;$('decision').innerHTML=title('Final result')+`<p class="result">${esc(m.verdict)}</p>${m.safetyEnded?`<h3>Final play</h3><p>${esc(m.last)}</p>${m.lastResult?C.resultHTML(m.lastResult,m.rosters[m.attacking].offense.map(id=>R.players.find(p=>p.id===id)),m.rosters[m.defending].defense.map(id=>R.defenders.find(p=>p.id===id))):''}<p>A safety ends the game immediately. No kick follows.</p>`:'<p>Both teams have completed their offensive drive.</p>'}<button id="new-game">Set up another game</button>`;$('new-game').onclick=()=>{setup();focus();};
+  }else {
+   $('opponent').hidden=true;const extra=m.phase==='extra',ended=m.phase==='drive-end';
+   const label=extra?'Attempt the extra point':ended?(m.drive===0?'Start the second drive':'Show final result'):'Choose calls for the next down';
+   $('decision').innerHTML=title(extra?'Touchdown — extra point':ended?'Drive complete':'Play result')+`<h3>Results of the play</h3><p class="result">${esc(m.last)}</p>`+(m.lastResult?'<details><summary>Play calculations and outcome probabilities</summary>'+C.resultHTML(m.lastResult,m.rosters[m.attacking].offense.map(id=>R.players.find(p=>p.id===id)),m.rosters[m.defending].defense.map(id=>R.defenders.find(p=>p.id===id)))+'</details>':'')+(extra?'<p>A total of 6 or higher on three dice scores one point.</p>':'')+(ended&&m.drive===0?`<p>Next, ${esc(m.names[m.defending])} starts ${R.spot(m.nextStart).toLowerCase()}. Each side chooses two players and three calls for every regular down.</p>`:'')+`<button id="next">${label}</button>`;
+   $('next').onclick=()=>{if(extra)m.extra();else m.next();render();focus();};
+  }
+ }
+ $('read-situation').onclick=()=>{$('announcer').textContent='';setTimeout(()=>$('announcer').textContent=situation(),40);};
+ setup();
+})();
+
+</script>
+<script>
+(()=>{
+ 'use strict';
+ const R=window.SidelineRules,C=window.SidelineCards,$=id=>document.getElementById(id);
+ const signed=n=>n>0?'plus '+n:n<0?'minus '+(-n):'zero';
+ const dialog=$('card-reference');let returnFocus;
+ $('reference-card').innerHTML='<optgroup label="Offensive plays">'+R.offense.map((p,i)=>`<option value="off-${i}">${p}</option>`).join('')+'</optgroup><optgroup label="Defensive plays">'+R.defense.map((p,i)=>`<option value="def-${i}">${p}</option>`).join('')+'</optgroup>';
+ $('reference-band').innerHTML=[-3,-2,-1,0,1,2,3].map(b=>`<option value="${b}" ${b===0?'selected':''}>${signed(b)}</option>`).join('');
+ $('reference-offense').innerHTML=R.offense.map((p,i)=>`<option value="${i}">${p}</option>`).join('');
+ function changed(){const defensive=$('reference-card').value.startsWith('def-');$('reference-opposition').hidden=!defensive;$('reference-output').innerHTML='<p>Select Display card data to view these choices.</p>';}
+ for(const id of ['reference-card','reference-band','reference-offense'])$(id).onchange=changed;
+ $('open-reference').onclick=()=>{returnFocus=document.activeElement;dialog.showModal();$('reference-card').focus();};
+ $('close-reference').onclick=()=>dialog.close();
+ dialog.addEventListener('close',()=>{if(returnFocus?.isConnected)returnFocus.focus();});
+ $('reference-form').onsubmit=e=>{
+  e.preventDefault();const [side,id]=$('reference-card').value.split('-'),index=Number(id),defensive=side==='def',play=defensive?Number($('reference-offense').value):index,band=Number($('reference-band').value),name=(defensive?R.defense:R.offense)[index];
+  const opponents=(defensive?R.offense:R.defense).map((name,p)=>`<li>${name}: ${signed(defensive?-R.match[p][index]:R.match[index][p])}.</li>`).join('');
+  $('reference-output').innerHTML=`<h3 id="reference-data-title" tabindex="-1">${name}: band ${signed(band)} data</h3>${defensive?`<p>Yardage and risks below are for ${R.offense[play]} at offensive outcome band ${signed(band)}. The ${name} matchup modifier against this offense is ${signed(-R.match[play][index])} from the defensive perspective, or ${signed(R.match[play][index])} from the offensive perspective. The selected band is already the final band; this reference does not add the matchup again.</p>`:'<p>The selected band is the final offensive outcome band.</p>'}${C.statsHTML(play,band)}<h4>Modifiers against all opposing plays</h4><p>Positive favors the ${defensive?'defense; reverse the sign for the offensive outcome modifier':'offense'}. Player bonuses are separate.</p><ul>${opponents}</ul>`;
+  $('reference-data-title').focus();
+ };
+ changed();
+})();
+
+</script>
+</body></html>
+
